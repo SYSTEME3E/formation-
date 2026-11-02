@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formations · Eric Kpakpo</title>
+<meta name="description" content="Formations en ligne d’Eric Kpakpo : e-commerce, Facebook Ads, marketing digital et création de sites web.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#050608; --card:#0e1219; --line:#1c2535; --blue:#2f80ff; --yellow:#ffd60a; --ink:#fff; --dim:#aab4c3; --lime:#c8f533; }
+  body.light { --bg:#f4f6fb; --card:#fff; --line:#dfe5f1; --blue:#1352f1; --ink:#0b1330; --dim:#5b6785; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:400 1rem/1.6 Manrope, system-ui, sans-serif; }
+  h1, h2, h3 { font-family:'Bricolage Grotesque', system-ui, sans-serif; line-height:1.12; margin:0; }
+  a { color:inherit; text-decoration:none; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
+  .dim { color:var(--dim); }
+  .top { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); }
+  .top .wrap { display:flex; align-items:center; justify-content:space-between; height:60px; }
+  .brand { font:800 1.15rem 'Bricolage Grotesque', sans-serif; } .brand span { color:var(--yellow); } body.light .brand span { color:var(--blue); }
+  .nav { display:flex; gap:14px; align-items:center; font-weight:600; font-size:.92rem; }
+  .pill { border:1px solid var(--line); padding:6px 14px; border-radius:20px; }
+  .hero { padding:56px 0 40px; background:radial-gradient(60% 60% at 85% 0%, rgba(47,128,255,.35), transparent 70%); }
+  body.light .hero { display:none; }
+  .tag { color:var(--yellow); font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:.8rem; margin:0 0 10px; }
+  h1 { font-size:clamp(2.2rem, 8vw, 3.6rem); } h1 span { color:var(--blue); }
+  .lead { color:var(--dim); max-width:540px; margin:14px 0 0; }
+  h2 { font-size:clamp(1.6rem, 5vw, 2.2rem); } h2::after { content:""; display:block; width:56px; height:5px; background:var(--yellow); margin-top:10px; border-radius:3px; }
+  .pad { padding:44px 0 64px; }
+  .chips { display:flex; gap:8px; overflow-x:auto; padding:18px 0; }
+  .chips button { flex:none; font:600 .9rem Manrope, sans-serif; color:var(--ink); background:var(--card); border:1px solid var(--line); padding:8px 16px; border-radius:20px; cursor:pointer; }
+  .chips button.on { background:var(--yellow); color:#050608; border-color:var(--yellow); }
+  .grid { display:grid; gap:18px; }
+  @media (min-width:640px) { .grid { grid-template-columns:repeat(2, 1fr); } }
+  @media (min-width:960px) { .grid { grid-template-columns:repeat(3, 1fr); } }
+  .card { display:block; background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; transition:transform .15s, border-color .15s; }
+  .card:hover { transform:translateY(-3px); border-color:var(--blue); }
+  .cover { aspect-ratio:16/9; width:100%; object-fit:cover; display:flex; align-items:flex-end; padding:14px; background:linear-gradient(135deg, #14233f, #2f80ff); font:800 1.2rem 'Bricolage Grotesque', sans-serif; }
+  .cbody { padding:16px; }
+  .cat { color:var(--yellow); font-weight:700; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; }
+  .card h3 { font-size:1.15rem; margin:6px 0 8px; }
+  .meta { color:var(--dim); font-size:.85rem; }
+  .price { margin-top:12px; font:800 1.2rem 'Bricolage Grotesque', sans-serif; } .price s { color:var(--dim); font:400 .85rem Manrope, sans-serif; margin-left:6px; }
+  .off { display:inline-block; background:#ffe9e7; color:#9b2c00; font:700 .75rem Manrope, sans-serif; padding:2px 8px; border-radius:12px; margin-left:6px; vertical-align:middle; }
+  .demo { background:var(--yellow); color:#050608; text-align:center; font-weight:700; font-size:.85rem; padding:6px 12px; }
+  /* page détail (style Blemama) */
+  .crumb { font-size:.85rem; color:var(--dim); margin:22px 0 12px; }
+  .detail { display:grid; gap:16px; padding-bottom:64px; } .detail > * { min-width:0; }
+  .detail h1 { font-size:clamp(1.9rem, 6vw, 2.8rem); color:var(--ink); }
+  .badge { display:inline-block; background:#e1e8ff; color:var(--blue); font-weight:700; font-size:.78rem; padding:3px 12px; border-radius:12px; margin:0 6px 12px 0; }
+  .tiles { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+  .tile { background:var(--card); border-radius:14px; padding:14px; box-shadow:0 1px 0 var(--line); } .tile b { display:block; font:800 1.15rem 'Bricolage Grotesque', sans-serif; } .tile span { color:var(--dim); font-size:.85rem; }
+  .box { background:var(--card); border-radius:18px; padding:22px; box-shadow:0 1px 0 var(--line); }
+  .box h2 { font-size:1.35rem; } .box h2::after { display:none; }
+  details { background:#f4f6fb; border-radius:12px; margin-top:10px; padding:12px 14px; }
+  summary { cursor:pointer; font-weight:700; list-style:none; display:flex; justify-content:space-between; gap:10px; } summary small { color:var(--dim); font-weight:400; flex:none; }
+  .les { display:flex; justify-content:space-between; gap:10px; padding:8px 0 0; font-size:.92rem; } .les i { color:var(--dim); font-style:normal; flex:none; }
+  .free { background:#e1e8ff; color:var(--blue); font-size:.72rem; font-weight:700; padding:1px 8px; border-radius:10px; margin-left:6px; }
+  .buy { background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 8px 30px rgba(19,82,241,.15); }
+  .buy .hd { background:var(--blue); color:#fff; padding:22px; } .buy .hd small { letter-spacing:.1em; font-weight:700; opacity:.85; }
+  .buy .hd b { display:block; font:800 2.2rem 'Bricolage Grotesque', sans-serif; margin-top:6px; } .buy .hd s { opacity:.8; }
+  .buy .bd { padding:20px; display:grid; gap:10px; }
+  .btn { display:block; text-align:center; font:700 1rem Manrope, sans-serif; padding:14px; border-radius:30px; cursor:pointer; }
+  .btn.b { background:var(--blue); color:#fff; box-shadow:0 4px 0 #0a3bb8; } .btn.o { border:2px solid var(--line); }
+  .btn.y { background:var(--yellow); color:#050608; display:inline-block; padding:14px 26px; margin-top:22px; }
+  .ok { list-style:none; padding:0; margin:6px 0 0; display:grid; gap:8px; font-size:.92rem; } .ok li::before { content:"✓"; color:#0a8f5a; font-weight:800; margin-right:8px; }
+  @media (min-width:900px) {
+    .detail { grid-template-columns:1fr 340px; } .detail > * { grid-column:1; }
+    .buy { grid-column:2; grid-row:1 / 4; align-self:start; position:sticky; top:80px; }
+  }
+  .narrow { max-width:460px; } .small { font-size:.85rem; } .lk { color:var(--blue); font-weight:700; }
+  .h1s { font-size:clamp(1.6rem, 5vw, 2.2rem); margin-bottom:14px; }
+  form.box label { display:block; font-weight:700; font-size:.9rem; color:var(--dim); margin:14px 0 6px; }
+  form.box input, form.box select { width:100%; font:400 1rem Manrope, sans-serif; padding:13px 16px; border:2px solid var(--line); border-radius:14px; background:#fff; color:var(--ink); }
+  form.box input:focus, form.box select:focus { outline:none; border-color:var(--blue); }
+  .mt { margin-top:26px; }
+  .msg { padding:12px 14px; border-radius:12px; margin:16px 0; font-size:.92rem; } .msg.bad { background:#ffe9e7; color:#9b2c00; } .msg.good { background:#dcf5ea; color:#0a6b45; }
+  .btn.b, .btn.l { border:0; } .btn.l { background:var(--lime); color:#0b1330; box-shadow:0 4px 0 #8fb21a; width:100%; }
+  .btn:disabled { opacity:.6; cursor:wait; } .sm { padding:8px 16px; font-size:.9rem; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
+  .co { display:grid; gap:16px; padding:30px 0 64px; } .sum { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); }
+  @media (min-width:900px) { .co { grid-template-columns:1fr 360px; } .co .buy { grid-column:2; grid-row:1; } }
+  body.light .cat { color:var(--blue); }
+  .vid { aspect-ratio:16/9; background:#0b1330; border-radius:16px; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#8fa0c8; }
+  .vid iframe, .vid video { width:100%; height:100%; border:0; background:#000; }
+  .prog { margin:14px 0 18px; } .bar { height:8px; background:#dfe5f1; border-radius:4px; } .bar i { display:block; height:100%; background:var(--blue); border-radius:4px; }
+  .spgrid { display:grid; gap:16px; } .spgrid > * { min-width:0; } .spgrid .box { margin-top:16px; }
+  .side { align-self:start; } .side details { background:#f4f6fb; }
+  .lrow { display:flex; align-items:center; gap:10px; padding:9px 8px; border-radius:10px; font-size:.92rem; } .lrow span:nth-child(2) { flex:1; } .lrow i { color:var(--dim); font-style:normal; font-size:.8rem; }
+  .lrow.on { background:#e1e8ff; font-weight:700; }
+  .dot { flex:none; width:20px; height:20px; border-radius:50%; border:2px solid var(--line); font-size:.7rem; display:flex; align-items:center; justify-content:center; color:#fff; } .dot.ok { background:#0a8f5a; border-color:#0a8f5a; }
+  .dls { display:grid; gap:8px; margin-top:12px; } .dl { text-align:left; font:600 .95rem Manrope, sans-serif; background:#f4f6fb; border:1px solid var(--line); color:var(--ink); padding:12px 14px; border-radius:12px; cursor:pointer; }
+  .actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:18px; } .actions .btn.b { padding:14px 26px; }
+  @media (min-width:900px) { .spgrid { grid-template-columns:1fr 340px; } .side { position:sticky; top:80px; margin-top:0 !important; } }
+  footer { border-top:1px solid var(--line); padding:28px 0; color:var(--dim); font-size:.9rem; }
+  footer .wrap { display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between; } footer a { text-decoration:underline; margin-right:14px; }
+  .center { text-align:center; padding:80px 20px; }
+</style>
+</head>
+<body>
+<div id="demo" class="demo" hidden>Mode démo : formations d’exemple. Ajoute tes clés Supabase dans le script pour afficher les tiennes.</div>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#/">Eric <span>Kpakpo</span></a>
+  <nav class="nav"><a id="nav-user" class="pill" href="#/connexion">Connexion</a></nav>
+</div></header>
+
+<header class="hero"><div class="wrap">
+  <p class="tag">Formations en ligne</p>
+  <h1>Apprends à <span>vendre en ligne.</span></h1>
+  <p class="lead">E-commerce, Facebook Ads, marketing digital et création de sites web. Des formations concrètes, accessibles dès le paiement.</p>
+  <a class="btn y" href="#formations">Voir les formations</a>
+</div></header>
+
+<main id="app"></main>
+
+<footer><div class="wrap">
+  <span>© <span id="y"></span> Eric Kpakpo · Cotonou</span>
+  <span><a id="f-wa" target="_blank" rel="noopener">WhatsApp</a><a id="f-fb" target="_blank" rel="noopener">Facebook</a><a id="f-tt" target="_blank" rel="noopener">TikTok</a></span>
+</div></footer>
+
+<script src="https://cdn.kkiapay.me/k.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* ====== À REMPLIR : Supabase > Project Settings > API ====== */
+const CFG = {
+  url: '', key: '',        // Supabase : URL du projet + clé "anon" (publique)
+  kkiapayKey: '',          // Kkiapay : clé PUBLIQUE uniquement
+  sandbox: true            // true = mode test, false = vrais paiements
+};
+const LINKS = {
+  wa: 'https://wa.me/message/IA5XETALWYBSB1',
+  fb: 'https://www.facebook.com/profile.php?id=61595605702706',
+  tt: 'https://www.tiktok.com/@digital55237'
+};
+
+const demo = !CFG.url || !CFG.key;
+const sb = demo ? null : supabase.createClient(CFG.url, CFG.key);
+const app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const xof = n => Number(n).toLocaleString('fr-FR') + '\u00a0XOF';
+const LV = { debutant:'Débutant', intermediaire:'Intermédiaire', avance:'Avancé' };
+const dur = m => { m = m || 0; const h = Math.floor(m / 60); return h ? h + 'h' + String(m % 60).padStart(2, '0') : m + ' min'; };
+const off = c => c.old_price_xof > c.price_xof ? Math.round(100 - c.price_xof * 100 / c.old_price_xof) : 0;
+const stats = a => ({ n: a.length, min: a.reduce((s, i) => s + (i.duration_min || 0), 0) });
+
+/* ---- données d'exemple (mode démo) ---- */
+const DEMO = (() => {
+  const C = (id, t, slug, cat, price, old, lvl, d) => ({ id, title:t, slug, price_xof:price, old_price_xof:old, level:lvl, short_description:d, description:d, cover_url:null, categories:{ name:cat, slug:cat } });
+  const courses = [
+    C('1','Acheter en Chine et revendre','e-commerce-chine','E-commerce',25000,45000,'debutant','Trouve des fournisseurs, commande en toute sécurité et revends avec marge.'),
+    C('2','Facebook Ads : vendre avec la publicité','facebook-ads','Facebook Ads',30000,50000,'intermediaire','Crée, lance et optimise tes campagnes publicitaires.'),
+    C('3','Créer son site web de A à Z','site-web','Création de sites web',20000,null,'debutant','Mets ton activité en ligne avec un site professionnel.')
+  ];
+  const modules = [], lessons = [];
+  courses.forEach(c => ['Les bases','Passer à l’action','Aller plus loin'].forEach((t, i) => {
+    const m = { id:c.id + '-' + i, course_id:c.id, title:t, position:i }; modules.push(m);
+    [1,2,3].forEach(k => lessons.push({ id:m.id + '-' + k, module_id:m.id, course_id:c.id, title:'Leçon ' + (i * 3 + k), duration_min:8 + k * 4, is_free_preview:i === 0 && k === 1, position:k }));
+  }));
+  return { courses, modules, lessons };
+})();
+
+/* ---- accès aux données ---- */
+async function getCourses() {
+  if (demo) return DEMO.courses.map(c => ({ ...c, ...stats(DEMO.lessons.filter(l => l.course_id === c.id)) }));
+  const [c, l] = await Promise.all([
+    sb.from('courses').select('*, categories(name,slug)').eq('is_published', true).order('created_at', { ascending:false }),
+    sb.from('lesson_outline').select('course_id, duration_min')
+  ]);
+  if (c.error) throw c.error;
+  return c.data.map(x => ({ ...x, ...stats((l.data || []).filter(i => i.course_id === x.id)) }));
+}
+async function getDetail(slug) {
+  if (demo) {
+    const c = DEMO.courses.find(x => x.slug === slug); if (!c) return null;
+    return { c, modules: DEMO.modules.filter(m => m.course_id === c.id), lessons: DEMO.lessons.filter(l => l.course_id === c.id) };
+  }
+  const r = await sb.from('courses').select('*, categories(name,slug)').eq('slug', slug).eq('is_published', true).maybeSingle();
+  if (r.error) throw r.error; if (!r.data) return null;
+  const [m, l] = await Promise.all([
+    sb.from('modules').select('*').eq('course_id', r.data.id).order('position'),
+    sb.from('lesson_outline').select('*').eq('course_id', r.data.id).order('position')
+  ]);
+  return { c: r.data, modules: m.data || [], lessons: l.data || [] };
+}
+
+/* ---- pages ---- */
+let all = null, cat = 'all';
+function card(c) {
+  const d = off(c);
+  const cover = c.cover_url ? `<img class="cover" src="${esc(c.cover_url)}" alt="" loading="lazy">` : `<div class="cover">${esc(c.title)}</div>`;
+  return `<a class="card" href="#/formation/${encodeURIComponent(c.slug)}">${cover}<div class="cbody">
+    <span class="cat">${esc(c.categories?.name || 'Formation')}</span><h3>${esc(c.title)}</h3>
+    <div class="meta">${LV[c.level] || ''} · ${c.n} leçon${c.n > 1 ? 's' : ''}${c.min ? ' · ' + dur(c.min) : ''}</div>
+    <div class="price">${xof(c.price_xof)}${c.old_price_xof > c.price_xof ? `<s>${xof(c.old_price_xof)}</s><span class="off">-${d}%</span>` : ''}</div></div></a>`;
+}
+async function home() {
+  app.innerHTML = '<div class="center dim">Chargement…</div>';
+  all = all || await getCourses();
+  const cats = [...new Map(all.filter(c => c.categories).map(c => [c.categories.slug, c.categories.name]))];
+  const list = all.filter(c => cat === 'all' || c.categories?.slug === cat);
+  app.innerHTML = `<section id="formations" class="pad"><div class="wrap"><h2>Nos formations</h2>
+    <div class="chips"><button data-c="all" class="${cat === 'all' ? 'on' : ''}">Toutes</button>${cats.map(([s, n]) => `<button data-c="${esc(s)}" class="${cat === s ? 'on' : ''}">${esc(n)}</button>`).join('')}</div>
+    <div class="grid">${list.map(card).join('') || '<p class="dim">Aucune formation pour le moment. Reviens bientôt.</p>'}</div></div></section>`;
+  app.querySelectorAll('.chips button').forEach(b => b.onclick = () => { cat = b.dataset.c; home(); });
+}
+async function detail(slug) {
+  app.innerHTML = '<div class="center dim">Chargement…</div>';
+  const d = await getDetail(slug);
+  if (!d) { app.innerHTML = '<div class="center"><h2>Formation introuvable</h2><p><a class="btn y" href="#/">Voir les formations</a></p></div>'; return; }
+  const { c, modules, lessons } = d, s = stats(lessons), pct = off(c);
+  let owned = false;
+  if (!demo && session) { const q = await sb.from('enrollments').select('id').eq('course_id', c.id).eq('user_id', session.user.id).limit(1); owned = !!(q.data && q.data.length); }
+  document.title = c.title + ' · Eric Kpakpo';
+  const mods = modules.map((m, i) => { const ls = lessons.filter(l => l.module_id === m.id), t = stats(ls);
+    return `<details${i === 0 ? ' open' : ''}><summary><span>${String(i + 1).padStart(2, '0')} · ${esc(m.title)}</span><small>${t.n} leçon${t.n > 1 ? 's' : ''} · ${dur(t.min)}</small></summary>
+    ${ls.map(l => `<div class="les"><span>${esc(l.title)}${l.is_free_preview ? '<span class="free">Aperçu gratuit</span>' : ''}</span><i>${dur(l.duration_min)}</i></div>`).join('')}</details>`; }).join('');
+  app.innerHTML = `<div class="wrap detail">
+    <div><div class="crumb"><a href="#/">Formations</a> › ${esc(c.categories?.name || '')}</div>
+      <span class="badge">${esc(c.categories?.name || 'Formation')}</span><h1>${esc(c.title)}</h1>
+      <p class="dim" style="margin-top:12px">${esc(c.short_description)}</p><p class="dim" style="font-size:.88rem">Par ${esc(c.instructor)}</p></div>
+    <div class="tiles"><div class="tile"><b>${LV[c.level] || ''}</b><span>Niveau</span></div><div class="tile"><b>${dur(s.min)}</b><span>Durée</span></div><div class="tile"><b>${s.n}</b><span>Leçons</span></div></div>
+    <aside class="buy"><div class="hd"><small>ACCÈS À LA FORMATION</small><b>${xof(c.price_xof)}</b>${c.old_price_xof > c.price_xof ? `<s>${xof(c.old_price_xof)}</s> <span class="off">-${pct}%</span>` : ''}</div>
+      <div class="bd">${owned ? `<a class="btn b" href="#/cours/${encodeURIComponent(c.slug)}">Continuer la formation</a>` : `<a class="btn b" href="#/paiement/${encodeURIComponent(c.slug)}">Démarrer maintenant</a>`}
+      <a class="btn o" href="${LINKS.wa}" target="_blank" rel="noopener">Poser une question sur WhatsApp</a>
+      <ul class="ok"><li>${s.n} leçons</li><li>${dur(s.min)} de contenu</li><li>Fichiers à télécharger</li><li>Accès immédiat après le paiement</li></ul></div></aside>
+    ${c.description ? `<div class="box"><h2>Description</h2><p style="margin:10px 0 0;white-space:pre-line">${esc(c.description)}</p></div>` : ''}
+    <div class="box"><h2>Contenu de la formation</h2><p class="dim" style="font-size:.85rem;margin:4px 0 0">${modules.length} section${modules.length > 1 ? 's' : ''} · ${s.n} leçons · ${dur(s.min)}</p>${mods}</div></div>`;
+}
+function soon() { app.innerHTML = '<div class="center"><h2>Bientôt disponible</h2><p class="dim">L’espace de cours arrive à la prochaine étape.</p><a class="btn y" href="#/">Retour aux formations</a></div>'; }
+
+/* ---- compte & paiement ---- */
+let session = null, pay = null;
+const $ = s => document.querySelector(s);
+const COUNTRIES = ['Bénin', 'Togo', 'Côte d’Ivoire', 'Sénégal', 'Burkina Faso', 'Mali', 'Niger', 'Cameroun', 'Autre'];
+const LOADING = '<div class="center dim">Chargement…</div>';
+const msg = (t, ok) => { const b = $('#msg'); if (b) { b.textContent = t; b.className = 'msg ' + (ok ? 'good' : 'bad'); b.hidden = !t; } };
+function updateNav() { const a = $('#nav-user'); a.textContent = session ? 'Mes formations' : 'Connexion'; a.href = session ? '#/mes-formations' : '#/connexion'; }
+async function fn(name, body) {
+  const { data, error } = await sb.functions.invoke(name, { body });
+  if (error) { let m = 'Une erreur est survenue. Réessaie.'; try { m = (await error.context.json()).error || m; } catch (_) {} throw new Error(m); }
+  return data;
+}
+const cov = c => c.cover_url ? `<img class="cover" src="${esc(c.cover_url)}" alt="" loading="lazy">` : `<div class="cover">${esc(c.title)}</div>`;
+
+async function checkout(slug) {
+  app.innerHTML = LOADING;
+  const d = await getDetail(slug);
+  if (!d) { app.innerHTML = '<div class="center"><h2>Formation introuvable</h2><p><a class="btn y" href="#/">Voir les formations</a></p></div>'; return; }
+  const c = d.c, u = session && session.user;
+  document.title = 'Paiement · ' + c.title;
+  const fields = u ? `<p class="dim">Connecté : <b>${esc(u.email)}</b></p>` : `
+    <label>Prénom<input id="fn" required autocomplete="given-name"></label>
+    <label>Nom<input id="ln" required autocomplete="family-name"></label>
+    <label>E-mail<input id="em" type="email" required autocomplete="email" placeholder="email@exemple.com"></label>
+    <label>Pays de résidence<select id="co">${COUNTRIES.map(x => `<option>${esc(x)}</option>`).join('')}</select></label>
+    <label>Ton WhatsApp<input id="wa" type="tel" required autocomplete="tel" placeholder="+229 97 00 00 00"></label>
+    <label>Choisis un mot de passe<input id="pw" type="password" minlength="8" required autocomplete="new-password"></label>
+    <p class="dim small">Ton compte est créé avec ces informations. Déjà un compte ? <a class="lk" href="#/connexion">Se connecter</a></p>`;
+  const old = c.old_price_xof > c.price_xof;
+  app.innerHTML = `<div class="wrap co"><form id="f" class="box"><h1 class="h1s">Tes informations</h1>${fields}
+    <label>Code promo (facultatif)<input id="pr" autocomplete="off"></label>
+    <h2 class="mt">Moyen de paiement</h2><p class="dim">Mobile Money ou carte bancaire, dans une fenêtre sécurisée Kkiapay.</p>
+    <div id="msg" class="msg" hidden></div>
+    <button id="pay" class="btn l" type="submit">🔒 Payer ${xof(c.price_xof)}</button>
+    <p class="dim small" style="margin-top:12px">Accès immédiat après le paiement, depuis ta page « Mes formations ».</p></form>
+    <aside class="buy"><div class="hd"><small>TA COMMANDE</small><b style="font-size:1.35rem">${esc(c.title)}</b><b>${xof(c.price_xof)}</b></div>
+    <div class="bd">${old ? `<div class="sum"><span>Prix habituel</span><s>${xof(c.old_price_xof)}</s></div><div class="sum"><span>Réduction</span><span style="color:#0a8f5a">-${xof(c.old_price_xof - c.price_xof)}</span></div>` : ''}
+    <div class="sum" style="border:0"><b>Total</b><b>${xof(c.price_xof)}</b></div></div></aside></div>`;
+  $('#f').onsubmit = async ev => {
+    ev.preventDefault(); const b = $('#pay'); b.disabled = true; msg('');
+    try {
+      if (demo || !CFG.kkiapayKey) throw new Error('Mode démo : ajoute tes clés Supabase et Kkiapay dans le script pour payer.');
+      let email = u && u.email, name = '', phone = '';
+      if (!u) {
+        email = $('#em').value.trim(); name = $('#fn').value.trim() + ' ' + $('#ln').value.trim(); phone = $('#wa').value.replace(/\D/g, '');
+        const r = await sb.auth.signUp({ email, password: $('#pw').value, options: { data: { first_name: $('#fn').value.trim(), last_name: $('#ln').value.trim(), whatsapp: $('#wa').value.trim(), country: $('#co').value } } });
+        const exists = 'Un compte existe déjà avec cet e-mail. Connecte-toi pour continuer.';
+        if (r.error) throw new Error(/registered/i.test(r.error.message) ? exists : r.error.message);
+        if (r.data.user && r.data.user.identities && r.data.user.identities.length === 0) throw new Error(exists);
+        if (!r.data.session) throw new Error('Compte créé. Confirme ton e-mail, puis reviens payer.');
+      }
+      const o = await fn('create-order', { slug, promo: $('#pr').value.trim() });
+      if (o.free) { location.hash = '#/succes/' + encodeURIComponent(slug); return; }
+      pay = { orderId: o.orderId, slug };
+      openKkiapayWidget({ amount: o.amount, key: CFG.kkiapayKey, sandbox: CFG.sandbox, email, name, phone, theme: '#1352f1', position: 'center', data: o.orderId });
+    } catch (e) { msg(e.message); }
+    b.disabled = false;
+  };
+}
+function wirePay() {
+  if (typeof addSuccessListener !== 'function') return;
+  addSuccessListener(async r => {
+    if (!pay) return; const p = pay; msg('Vérification du paiement…', true);
+    try { await fn('confirm-payment', { orderId: p.orderId, transactionId: r.transactionId }); pay = null; location.hash = '#/succes/' + encodeURIComponent(p.slug); }
+    catch (e) { msg(e.message + ' Si tu as été débité, écris-nous sur WhatsApp avec la référence ' + r.transactionId + '.'); }
+  });
+  addFailedListener(() => msg('Le paiement n’a pas abouti. Tu peux réessayer.'));
+}
+async function success(slug) {
+  const d = await getDetail(slug);
+  app.innerHTML = `<div class="center"><div style="font-size:3rem">✅</div><h1 class="h1s">Paiement confirmé</h1><p class="dim">Ton accès à <b>${esc(d ? d.c.title : 'la formation')}</b> est prêt.</p><a class="btn b" style="display:inline-block;padding:14px 28px;margin-top:10px" href="#/mes-formations">Accéder à mes formations</a></div>`;
+}
+function login() {
+  document.title = 'Connexion · Eric Kpakpo';
+  app.innerHTML = `<div class="wrap narrow pad"><form id="f" class="box"><h1 class="h1s">Connexion</h1>
+    <label>E-mail<input id="em" type="email" required autocomplete="email"></label>
+    <label>Mot de passe<input id="pw" type="password" required autocomplete="current-password"></label>
+    <div id="msg" class="msg" hidden></div><button class="btn b" style="width:100%" type="submit">Se connecter</button>
+    <p class="dim small" style="margin-top:14px">Pas encore de compte ? Il est créé quand tu achètes une formation. <a class="lk" href="#/">Voir les formations</a></p></form></div>`;
+  $('#f').onsubmit = async ev => {
+    ev.preventDefault(); if (demo) return msg('Mode démo : ajoute tes clés Supabase pour te connecter.');
+    const r = await sb.auth.signInWithPassword({ email: $('#em').value.trim(), password: $('#pw').value });
+    if (r.error) return msg('E-mail ou mot de passe incorrect.');
+    location.hash = '#/mes-formations';
+  };
+}
+async function mine() {
+  if (demo || !session) { location.hash = '#/connexion'; return; }
+  app.innerHTML = LOADING;
+  const r = await sb.from('enrollments').select('created_at, courses(title, slug, cover_url, categories(name))').order('created_at', { ascending: false });
+  if (r.error) throw r.error;
+  const list = (r.data || []).filter(e => e.courses);
+  app.innerHTML = `<div class="wrap pad"><div class="row"><h1 class="h1s">Mes formations</h1><button id="out" class="btn o sm">Déconnexion</button></div>
+    <div class="grid">${list.map(e => `<a class="card" href="#/cours/${encodeURIComponent(e.courses.slug)}">${cov(e.courses)}<div class="cbody"><span class="cat">${esc(e.courses.categories ? e.courses.categories.name : 'Formation')}</span><h3>${esc(e.courses.title)}</h3><div class="meta">Ouvrir la formation →</div></div></a>`).join('') || '<p class="dim">Tu n’as pas encore de formation. <a class="lk" href="#/">Voir le catalogue</a></p>'}</div></div>`;
+  $('#out').onclick = async () => { await sb.auth.signOut(); location.hash = '#/'; };
+}
+
+/* ---- espace élève : suivre la formation ---- */
+function player(url) {
+  if (!url) return '<div class="vid empty">Pas de vidéo pour cette leçon.</div>';
+  const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  if (yt) return `<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
+  const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vm) return `<div class="vid"><iframe src="https://player.vimeo.com/video/${vm[1]}" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  return `<div class="vid"><video controls controlslist="nodownload" playsinline src="${esc(url)}"></video></div>`;
+}
+async function space(slug, lid) {
+  if (!demo && !session) { location.hash = '#/connexion'; return; }
+  app.innerHTML = LOADING;
+  let c, mods, ls, files = [], done = new Set();
+  const gone = () => { app.innerHTML = '<div class="center"><h2>Formation introuvable</h2><p><a class="btn y" href="#/mes-formations">Mes formations</a></p></div>'; };
+  if (demo) {
+    const d = await getDetail(slug); if (!d) return gone();
+    c = d.c; mods = d.modules; ls = d.lessons.map(l => ({ ...l, content: 'Contenu de démonstration de la leçon.', video_url: null }));
+  } else {
+    const r = await sb.from('courses').select('id, title, slug').eq('slug', slug).maybeSingle();
+    if (r.error) throw r.error; if (!r.data) return gone(); c = r.data;
+    const [m, l, f, p, e, a] = await Promise.all([
+      sb.from('modules').select('*').eq('course_id', c.id).order('position'),
+      sb.from('lessons').select('*').eq('course_id', c.id).order('position'),
+      sb.from('lesson_files').select('*').eq('course_id', c.id),
+      sb.from('lesson_progress').select('lesson_id'),
+      sb.from('enrollments').select('id').eq('course_id', c.id).eq('user_id', session.user.id).limit(1),
+      sb.rpc('is_admin')
+    ]);
+    if (!((e.data || []).length || a.data === true)) {
+      app.innerHTML = `<div class="center"><h2>Accès réservé</h2><p class="dim">Tu n’as pas encore acheté cette formation.</p><a class="btn b" style="display:inline-block;padding:14px 28px" href="#/formation/${encodeURIComponent(slug)}">Voir la formation</a></div>`; return;
+    }
+    mods = m.data || []; ls = l.data || []; files = f.data || [];
+    const ids = new Set(ls.map(x => x.id)); done = new Set((p.data || []).map(x => x.lesson_id).filter(x => ids.has(x)));
+  }
+  const mpos = Object.fromEntries(mods.map((m, i) => [m.id, i]));
+  ls.sort((a, b) => (mpos[a.module_id] - mpos[b.module_id]) || (a.position - b.position));
+  if (!ls.length) { app.innerHTML = '<div class="center"><h2>Bientôt des leçons</h2><p class="dim">Le contenu de cette formation arrive très vite.</p></div>'; return; }
+  document.title = c.title + ' · Eric Kpakpo';
+  let cur = ls.find(l => l.id === lid) || ls.find(l => !done.has(l.id)) || ls[0];
+  const url = () => '#/cours/' + encodeURIComponent(slug) + '/' + cur.id;
+  const mark = async on => {
+    if (!demo) {
+      const r = on ? await sb.from('lesson_progress').insert({ user_id: session.user.id, lesson_id: cur.id })
+                   : await sb.from('lesson_progress').delete().eq('lesson_id', cur.id).eq('user_id', session.user.id);
+      if (r.error && r.error.code !== '23505') { alert('Enregistrement impossible. Réessaie.'); return false; }
+    }
+    if (on) done.add(cur.id); else done.delete(cur.id); return true;
+  };
+  const dlBtns = a => a.map(f => `<button class="dl" data-p="${esc(f.file_path)}" data-n="${esc(f.name)}">⬇ ${esc(f.name)}</button>`).join('');
+  const draw = () => {
+    const i = ls.indexOf(cur), next = ls[i + 1], pct = Math.round(done.size * 100 / ls.length);
+    const mine = files.filter(f => f.lesson_id === cur.id), general = files.filter(f => !f.lesson_id);
+    app.innerHTML = `<div class="wrap pad" style="padding-top:20px">
+      <div class="crumb" style="margin-top:0"><a href="#/mes-formations">Mes formations</a> › ${esc(c.title)}</div>
+      <div class="prog"><div class="row" style="margin:0 0 8px"><b>${done.size} / ${ls.length} leçons terminées</b><b>${pct}%</b></div><div class="bar"><i style="width:${pct}%"></i></div>${pct === 100 ? '<div class="msg good">🎉 Félicitations, tu as terminé la formation !</div>' : ''}</div>
+      <div class="spgrid"><div>
+        ${player(cur.video_url)}<h1 class="h1s" style="margin-top:18px">${esc(cur.title)}</h1>
+        ${cur.content ? `<div class="box"><p style="margin:0;white-space:pre-line">${esc(cur.content)}</p></div>` : ''}
+        ${mine.length ? `<div class="box"><h2>Fichiers de cette leçon</h2><div class="dls">${dlBtns(mine)}</div></div>` : ''}
+        ${general.length ? `<div class="box"><h2>Ressources de la formation</h2><div class="dls">${dlBtns(general)}</div></div>` : ''}
+        <div class="actions"><button id="done" class="btn b">${next ? 'Terminer et continuer' : 'Terminer la leçon'}</button>${done.has(cur.id) ? '<button id="undo" class="btn o sm">Marquer comme non terminée</button>' : ''}</div>
+      </div>
+      <aside class="box side"><h2>Contenu</h2>${mods.map(m => { const it = ls.filter(l => l.module_id === m.id);
+        return `<details${it.includes(cur) ? ' open' : ''}><summary><span>${esc(m.title)}</span><small>${it.length}</small></summary>${it.map(l => `<a class="lrow${l === cur ? ' on' : ''}" href="#" data-id="${l.id}"><span class="dot${done.has(l.id) ? ' ok' : ''}">${done.has(l.id) ? '✓' : ''}</span><span>${esc(l.title)}</span><i>${dur(l.duration_min)}</i></a>`).join('')}</details>`; }).join('')}</aside>
+      </div></div>`;
+    app.querySelectorAll('.lrow').forEach(a => a.onclick = ev => { ev.preventDefault(); cur = ls.find(l => l.id === a.dataset.id); history.replaceState(null, '', url()); draw(); scrollTo(0, 0); });
+    $('#done').onclick = async () => { if (!(await mark(true))) return; if (next) cur = next; history.replaceState(null, '', url()); draw(); scrollTo(0, 0); };
+    const u = $('#undo'); if (u) u.onclick = async () => { if (await mark(false)) draw(); };
+    app.querySelectorAll('.dl').forEach(b => b.onclick = async () => {
+      const r = await sb.storage.from('course-files').createSignedUrl(b.dataset.p, 120, { download: b.dataset.n });
+      if (r.error) { alert('Téléchargement impossible. Réessaie.'); return; }
+      const a = document.createElement('a'); a.href = r.data.signedUrl; a.download = b.dataset.n; document.body.append(a); a.click(); a.remove();
+    });
+  };
+  draw();
+}
+
+async function route() {
+  const m = (location.hash.slice(1) || '/').split('/'), R = m[1], arg = decodeURIComponent(m[2] || '');
+  const light = ['formation', 'paiement', 'connexion', 'succes', 'mes-formations', 'cours'].includes(R);
+  document.body.classList.toggle('light', light);
+  if (!light) document.title = 'Formations · Eric Kpakpo';
+  scrollTo(0, 0);
+  try {
+    if (R === 'formation') await detail(arg);
+    else if (R === 'paiement') await checkout(arg);
+    else if (R === 'succes') await success(arg);
+    else if (R === 'connexion') login();
+    else if (R === 'mes-formations') await mine();
+    else if (R === 'cours') await space(arg, decodeURIComponent(m[3] || ''));
+    else await home();
+  } catch (e) { console.error(e); app.innerHTML = '<div class="center"><p>Une erreur est survenue. Réessaie dans un instant.</p></div>'; }
+}
+document.getElementById('y').textContent = new Date().getFullYear();
+document.getElementById('f-wa').href = LINKS.wa; document.getElementById('f-fb').href = LINKS.fb; document.getElementById('f-tt').href = LINKS.tt;
+document.getElementById('demo').hidden = !demo;
+(async () => {
+  if (!demo) { const r = await sb.auth.getSession(); session = r.data.session; sb.auth.onAuthStateChange((_e, x) => { session = x; updateNav(); }); }
+  updateNav(); wirePay(); addEventListener('hashchange', route); route();
+})();
+</script>
+</body>
+</html>
