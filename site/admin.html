@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin · Formations</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#f4f6fb; --card:#fff; --line:#dfe5f1; --blue:#1352f1; --ink:#0b1330; --dim:#5b6785; --red:#c62828; --green:#0a8f5a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:400 1rem/1.5 Manrope, system-ui, sans-serif; }
+  h1, h2, h3 { font-family:'Bricolage Grotesque', sans-serif; margin:0 0 12px; line-height:1.15; }
+  h1 { font-size:1.7rem; } h2 { font-size:1.25rem; }
+  a { color:inherit; text-decoration:none; } .dim { color:var(--dim); } .small { font-size:.85rem; }
+  .wrap { max-width:960px; margin:0 auto; padding:0 16px; }
+  #bar { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid var(--line); }
+  #bar .wrap { display:flex; align-items:center; gap:12px; height:56px; }
+  .brand { font:800 1.05rem 'Bricolage Grotesque', sans-serif; color:var(--blue); flex:none; }
+  #tabs { display:flex; gap:4px; overflow-x:auto; flex:1; } #tabs a { flex:none; padding:7px 13px; border-radius:20px; font-weight:700; font-size:.9rem; color:var(--dim); }
+  #tabs a.on { background:var(--blue); color:#fff; }
+  main { padding:22px 0 80px; }
+  .card { background:var(--card); border-radius:16px; padding:18px; margin-bottom:16px; box-shadow:0 1px 0 var(--line); }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:16px; }
+  .tile { background:var(--card); border-radius:16px; padding:16px; } .tile b { display:block; font:800 1.6rem 'Bricolage Grotesque', sans-serif; } .tile span { color:var(--dim); font-size:.85rem; }
+  .item { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; padding:12px 0; border-bottom:1px solid var(--line); } .item:last-child { border:0; }
+  .item > div { min-width:0; flex:1 1 200px; } .item b { display:block; }
+  label { display:block; font-weight:700; font-size:.85rem; color:var(--dim); margin:12px 0 5px; }
+  input, select, textarea { width:100%; font:400 1rem Manrope, sans-serif; padding:11px 13px; border:2px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--blue); }
+  input[type=checkbox] { width:auto; margin-right:8px; } label.ck { display:flex; align-items:center; color:var(--ink); }
+  .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  button, .btn { font:700 .95rem Manrope, sans-serif; border:0; border-radius:24px; padding:11px 20px; cursor:pointer; background:var(--blue); color:#fff; display:inline-block; }
+  .o { background:#fff; color:var(--ink); border:2px solid var(--line); } .d { background:#ffe9e7; color:var(--red); } .sm { padding:7px 14px; font-size:.85rem; }
+  .actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+  .badge { display:inline-block; font-size:.72rem; font-weight:700; padding:2px 10px; border-radius:12px; background:#e1e8ff; color:var(--blue); }
+  .paid, .on-b { background:#dcf5ea; color:var(--green); } .pending { background:#fff3d6; color:#8a5a00; } .failed, .refunded { background:#ffe9e7; color:var(--red); }
+  .mod { border:2px solid var(--line); border-radius:14px; padding:12px; margin-bottom:12px; }
+  .row2 { display:grid; grid-template-columns:1fr 64px auto auto; gap:8px; align-items:center; margin-bottom:10px; }
+  details.les { background:#f4f6fb; border-radius:12px; padding:10px 12px; margin-bottom:8px; } details.les summary { cursor:pointer; font-weight:700; }
+  .fup { margin-top:14px; } .fup input[type=file] { border:0; padding:8px 0; }
+  .chip { display:inline-flex; align-items:center; gap:6px; background:#e1e8ff; color:var(--blue); font-size:.8rem; font-weight:700; padding:3px 6px 3px 12px; border-radius:14px; margin:4px 6px 0 0; }
+  .chip button { padding:0 7px; background:transparent; color:var(--red); font-size:.9rem; }
+  #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:12px 20px; border-radius:24px; font-weight:700; z-index:20; max-width:90vw; } #toast.bad { background:var(--red); }
+  .center { max-width:400px; margin:60px auto; }
+  .msg { background:#ffe9e7; color:#9b2c00; padding:10px 14px; border-radius:12px; margin-top:12px; }
+</style>
+</head>
+<body>
+<header id="bar" hidden><div class="wrap"><span class="brand">Admin</span>
+  <nav id="tabs"><a href="#/dash">Tableau de bord</a><a href="#/courses">Formations</a><a href="#/students">Élèves</a><a href="#/orders">Commandes</a><a href="#/promos">Promos</a></nav>
+  <button class="o sm" id="out">Sortir</button></div></header>
+<main class="wrap" id="app"><p class="dim">Chargement…</p></main>
+<div id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const CFG = { url: '', key: '' };   // les mêmes que sur le site : URL Supabase + clé "anon"
+
+const $ = s => document.querySelector(s), app = $('#app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const xof = n => Number(n || 0).toLocaleString('fr-FR') + '\u00a0XOF';
+const day = d => d ? new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'short', year:'numeric' }) : '';
+const slugify = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+const safe = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w.\-]+/g, '_');
+const val = id => $('#' + id).value.trim();
+const ok = async p => { const r = await p; if (r.error) throw r.error; return r.data; };
+let tt; const toast = (t, bad) => { const el = $('#toast'); el.textContent = t; el.className = bad ? 'bad' : ''; el.hidden = false; clearTimeout(tt); tt = setTimeout(() => el.hidden = true, 3200); };
+const act = async (f, msg) => { try { await f(); if (msg) toast(msg); } catch (e) { console.error(e); toast(e.message || 'Erreur', true); } };
+const STAT = { pending:'En attente', paid:'Payée', failed:'Échouée', refunded:'Remboursée' };
+const sb = (CFG.url && CFG.key) ? supabase.createClient(CFG.url, CFG.key) : null;
+let ctx = null;
+
+/* ---------- connexion ---------- */
+function login(err) {
+  $('#bar').hidden = true;
+  app.innerHTML = `<form id="lf" class="card center"><h1>Admin</h1><label>E-mail<input id="em" type="email" required></label><label>Mot de passe<input id="pw" type="password" required></label>
+    ${err ? `<div class="msg">${esc(err)}</div>` : ''}<div class="actions"><button style="width:100%">Se connecter</button></div></form>`;
+  $('#lf').onsubmit = async ev => { ev.preventDefault(); const r = await sb.auth.signInWithPassword({ email: val('em'), password: $('#pw').value }); if (r.error) return login('E-mail ou mot de passe incorrect.'); boot(); };
+}
+async function boot() {
+  if (!sb) { app.innerHTML = '<div class="card">Ajoute ton URL et ta clé Supabase dans <b>CFG</b>, en haut du script.</div>'; return; }
+  const s = await sb.auth.getSession(); if (!s.data.session) return login();
+  const a = await sb.rpc('is_admin'); if (a.data !== true) { await sb.auth.signOut(); return login('Ce compte n’est pas administrateur.'); }
+  $('#bar').hidden = false; removeEventListener('hashchange', route); addEventListener('hashchange', route); route();
+}
+$('#out').onclick = async () => { await sb.auth.signOut(); login(); };
+
+async function route() {
+  const [, v, id] = (location.hash || '#/dash').split('/');
+  document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#/' + (v === 'course' ? 'courses' : v)));
+  scrollTo(0, 0); app.innerHTML = '<p class="dim">Chargement…</p>';
+  try { await ({ courses, course: () => editor(id), students, orders, promos }[v] || dash)(); }
+  catch (e) { console.error(e); app.innerHTML = `<div class="card"><h2>Erreur</h2><p>${esc(e.message || '')}</p></div>`; }
+}
+const profiles = () => ok(sb.from('profiles').select('*').order('created_at', { ascending:false }));
+const who = p => p ? esc(((p.first_name || '') + ' ' + (p.last_name || '')).trim() || p.email || 'Élève') : 'Élève supprimé';
+
+/* ---------- tableau de bord ---------- */
+async function dash() {
+  const [st, os, ps] = await Promise.all([ok(sb.rpc('admin_stats')), ok(sb.from('orders').select('*, courses(title)').order('created_at', { ascending:false }).limit(8)), profiles()]);
+  const pm = Object.fromEntries(ps.map(p => [p.id, p]));
+  app.innerHTML = `<h1>Tableau de bord</h1><div class="tiles"><div class="tile"><b>${st.students}</b><span>Élèves</span></div><div class="tile"><b>${st.orders_paid}</b><span>Ventes payées</span></div><div class="tile"><b>${xof(st.revenue_xof)}</b><span>Revenu</span></div></div>
+    <div class="card"><h2>Dernières commandes</h2>${os.map(o => `<div class="item"><div><b>${esc(o.courses ? o.courses.title : '—')}</b><span class="dim small">${who(pm[o.user_id])} · ${day(o.created_at)}</span></div><span>${xof(o.amount_xof)}</span><span class="badge ${o.status}">${STAT[o.status]}</span></div>`).join('') || '<p class="dim">Aucune commande pour le moment.</p>'}</div>`;
+}
+
+/* ---------- formations ---------- */
+async function courses() {
+  const cs = await ok(sb.from('courses').select('*, categories(name)').order('created_at', { ascending:false }));
+  app.innerHTML = `<div class="item" style="border:0"><h1 style="margin:0">Formations</h1><a class="btn" href="#/course/new">+ Nouvelle formation</a></div><div class="card">
+    ${cs.map(c => `<div class="item"><div><b>${esc(c.title)}</b><span class="dim small">${esc(c.categories ? c.categories.name : 'Sans catégorie')} · ${xof(c.price_xof)}</span></div><span class="badge ${c.is_published ? 'on-b' : 'pending'}">${c.is_published ? 'Publiée' : 'Brouillon'}</span><a class="btn o sm" href="#/course/${c.id}">Modifier</a></div>`).join('') || '<p class="dim">Aucune formation. Crée la première.</p>'}</div>`;
+}
+async function editor(id) {
+  const isNew = id === 'new';
+  const [cats, c] = await Promise.all([ok(sb.from('categories').select('*').order('position')), isNew ? null : ok(sb.from('courses').select('*').eq('id', id).single())]);
+  const v = c || { level:'debutant', instructor:'Eric Kpakpo', is_published:false };
+  app.innerHTML = `<a class="dim small" href="#/courses">← Formations</a><h1 style="margin-top:6px">${isNew ? 'Nouvelle formation' : 'Modifier la formation'}</h1>
+  <form id="cf" class="card">
+    <label>Titre<input id="title" required value="${esc(v.title)}"></label>
+    <label>Adresse (laisse vide pour la créer automatiquement)<input id="slug" value="${esc(v.slug)}"></label>
+    <label>Catégorie<select id="cat"><option value="">—</option>${cats.map(k => `<option value="${k.id}" ${k.id === v.category_id ? 'selected' : ''}>${esc(k.name)}</option>`).join('')}</select></label>
+    <label>Résumé court<input id="short" value="${esc(v.short_description)}"></label>
+    <label>Description<textarea id="desc" rows="5">${esc(v.description)}</textarea></label>
+    <div class="g2"><label>Niveau<select id="level">${[['debutant','Débutant'],['intermediaire','Intermédiaire'],['avance','Avancé']].map(l => `<option value="${l[0]}" ${l[0] === v.level ? 'selected' : ''}>${l[1]}</option>`).join('')}</select></label><label>Formateur<input id="inst" value="${esc(v.instructor)}"></label></div>
+    <div class="g2"><label>Prix (XOF)<input id="price" type="number" min="0" required value="${v.price_xof ?? ''}"></label><label>Ancien prix barré (facultatif)<input id="old" type="number" min="0" value="${v.old_price_xof ?? ''}"></label></div>
+    <label>Image de couverture${v.cover_url ? ` <a class="small" style="color:var(--blue)" href="${esc(v.cover_url)}" target="_blank" rel="noopener">(voir l’actuelle)</a>` : ''}<input id="cover" type="file" accept="image/*" style="border:0;padding:8px 0"></label>
+    <label class="ck"><input id="pub" type="checkbox" ${v.is_published ? 'checked' : ''}> Publier sur le site</label>
+    <div class="actions"><button>Enregistrer</button>${isNew ? '' : '<button type="button" id="delc" class="d">Supprimer</button>'}</div></form>
+  ${isNew ? '<p class="dim">Enregistre d’abord la formation pour ajouter les modules, leçons et fichiers.</p>' : '<div id="content"></div>'}`;
+  $('#cf').onsubmit = ev => { ev.preventDefault(); act(async () => {
+    const f = { title: val('title'), slug: slugify(val('slug') || val('title')), category_id: val('cat') || null, short_description: val('short'), description: $('#desc').value.trim(),
+      level: val('level'), instructor: val('inst'), price_xof: +val('price'), old_price_xof: val('old') ? +val('old') : null, is_published: $('#pub').checked };
+    const file = $('#cover').files[0];
+    if (file) { const path = Date.now() + '-' + safe(file.name); await ok(sb.storage.from('covers').upload(path, file)); f.cover_url = sb.storage.from('covers').getPublicUrl(path).data.publicUrl; }
+    if (isNew) { const r = await ok(sb.from('courses').insert(f).select('id').single()); location.hash = '#/course/' + r.id; }
+    else await ok(sb.from('courses').update(f).eq('id', id));
+  }, 'Enregistré ✓'); };
+  if (!isNew) {
+    $('#delc').onclick = () => { if (confirm('Supprimer définitivement cette formation ? S’il y a déjà des ventes, dépublie-la plutôt.')) act(async () => { await ok(sb.from('courses').delete().eq('id', id)); location.hash = '#/courses'; }); };
+    ctx = { c };
+    $('#content').onclick = contentClick; await loadContent();
+  }
+}
+const fileRow = f => `<div class="item"><span>📎 ${esc(f.name)}</span><button class="d sm" data-a="delfile" data-id="${f.id}" data-p="${esc(f.file_path)}">Supprimer</button></div>`;
+const lessonCard = l => `<details class="les" data-id="${l.id}"><summary>${esc(l.title)} ${l.is_free_preview ? '<span class="badge">Aperçu gratuit</span>' : ''}</summary>
+  <label>Titre<input class="t" value="${esc(l.title)}"></label>
+  <label>Lien de la vidéo (YouTube, Vimeo ou fichier)<input class="v" value="${esc(l.video_url)}" placeholder="https://…"></label>
+  <div class="g2"><label>Durée (minutes)<input class="d" type="number" min="0" value="${l.duration_min ?? ''}"></label><label>Ordre<input class="p" type="number" value="${l.position}"></label></div>
+  <label class="ck"><input class="fr" type="checkbox" ${l.is_free_preview ? 'checked' : ''}> Aperçu gratuit</label>
+  <label>Texte de la leçon<textarea class="c" rows="5">${esc(l.content)}</textarea></label>
+  <div class="fup"><b>Fichiers de la leçon</b>${ctx.fs.filter(f => f.lesson_id === l.id).map(fileRow).join('')}<input type="file"><button class="o sm" data-a="upfile" data-l="${l.id}">Envoyer le fichier</button></div>
+  <div class="actions"><button class="sm" data-a="saveles">Enregistrer la leçon</button><button class="d sm" data-a="delles">Supprimer</button></div></details>`;
+async function loadContent() {
+  const open = [...document.querySelectorAll('.les[open]')].map(x => x.dataset.id), cid = ctx.c.id;
+  const [mods, ls, fs] = await Promise.all([ok(sb.from('modules').select('*').eq('course_id', cid).order('position')), ok(sb.from('lessons').select('*').eq('course_id', cid).order('position')), ok(sb.from('lesson_files').select('*').eq('course_id', cid).order('created_at'))]);
+  Object.assign(ctx, { mods, ls, fs });
+  $('#content').innerHTML = `<div class="card"><h2>Modules et leçons</h2>${mods.map(m => `<div class="mod" data-id="${m.id}"><div class="row2"><input class="mt" value="${esc(m.title)}"><input class="mp" type="number" value="${m.position}" title="Ordre"><button class="o sm" data-a="savemod">OK</button><button class="d sm" data-a="delmod">✕</button></div>
+      ${ls.filter(l => l.module_id === m.id).map(lessonCard).join('')}<button class="o sm" data-a="addles" data-m="${m.id}">+ Leçon</button></div>`).join('')}<button data-a="addmod">+ Module</button></div>
+    <div class="card"><h2>Ressources de la formation</h2><p class="dim small">Fichiers visibles pour toute la formation (PDF, modèles…).</p><div class="fup">${fs.filter(f => !f.lesson_id).map(fileRow).join('')}<input type="file"><button class="o sm" data-a="upfile" data-l="">Envoyer le fichier</button></div></div>`;
+  open.forEach(i => { const d = document.querySelector(`.les[data-id="${i}"]`); if (d) d.open = true; });
+}
+function contentClick(e) {
+  const b = e.target.closest('button[data-a]'); if (!b) return;
+  const a = b.dataset.a, mod = b.closest('.mod'), les = b.closest('.les'), cid = ctx.c.id;
+  if (a.startsWith('del') && !confirm('Supprimer ?')) return;
+  act(async () => {
+    if (a === 'addmod') await ok(sb.from('modules').insert({ course_id: cid, title: 'Nouveau module', position: ctx.mods.length + 1 }));
+    if (a === 'savemod') await ok(sb.from('modules').update({ title: mod.querySelector('.mt').value.trim(), position: +mod.querySelector('.mp').value }).eq('id', mod.dataset.id));
+    if (a === 'delmod') await ok(sb.from('modules').delete().eq('id', mod.dataset.id));
+    if (a === 'addles') await ok(sb.from('lessons').insert({ module_id: b.dataset.m, course_id: cid, title: 'Nouvelle leçon', position: ctx.ls.filter(l => l.module_id === b.dataset.m).length + 1 }));
+    if (a === 'saveles') { const q = s => les.querySelector(s); await ok(sb.from('lessons').update({ title: q('.t').value.trim(), video_url: q('.v').value.trim() || null, duration_min: q('.d').value ? +q('.d').value : null, position: +q('.p').value, is_free_preview: q('.fr').checked, content: q('.c').value.trim() || null }).eq('id', les.dataset.id)); }
+    if (a === 'delles') await ok(sb.from('lessons').delete().eq('id', les.dataset.id));
+    if (a === 'upfile') {
+      const file = b.parentElement.querySelector('input[type=file]').files[0]; if (!file) throw new Error('Choisis d’abord un fichier.');
+      const path = cid + '/' + Date.now() + '-' + safe(file.name);
+      await ok(sb.storage.from('course-files').upload(path, file));
+      await ok(sb.from('lesson_files').insert({ lesson_id: b.dataset.l || null, course_id: cid, name: file.name, file_path: path }));
+    }
+    if (a === 'delfile') { await sb.storage.from('course-files').remove([b.dataset.p]); await ok(sb.from('lesson_files').delete().eq('id', b.dataset.id)); }
+    await loadContent();
+  }, 'Fait ✓');
+}
+
+/* ---------- élèves ---------- */
+async function students() {
+  const [ps, es, cs] = await Promise.all([profiles(), ok(sb.from('enrollments').select('id, user_id, course_id')), ok(sb.from('courses').select('id, title').order('title'))]);
+  const ct = Object.fromEntries(cs.map(c => [c.id, c.title]));
+  app.innerHTML = `<h1>Élèves (${ps.length})</h1><input id="q" placeholder="Rechercher un nom, e-mail ou numéro…" style="margin-bottom:14px"><div id="list" class="card"></div>`;
+  const draw = () => { const q = $('#q').value.toLowerCase().trim();
+    const list = ps.filter(p => !q || [p.first_name, p.last_name, p.email, p.whatsapp].join(' ').toLowerCase().includes(q));
+    $('#list').innerHTML = list.map(p => { const wa = (p.whatsapp || '').replace(/\D/g, '');
+      return `<div class="item" data-u="${p.id}"><div><b>${who(p)}</b><span class="dim small">${esc(p.email)} · ${esc(p.country)} · inscrit le ${day(p.created_at)}</span>${wa ? ` <a class="small" style="color:var(--blue)" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+        <div>${es.filter(e => e.user_id === p.id).map(e => `<span class="chip">${esc(ct[e.course_id])}<button data-a="revoke" data-id="${e.id}" title="Retirer l’accès">✕</button></span>`).join('') || '<span class="dim small">Aucune formation</span>'}</div></div>
+        <select style="max-width:200px">${cs.map(c => `<option value="${c.id}">${esc(c.title)}</option>`).join('')}</select><button class="o sm" data-a="grant">Donner l’accès</button></div>`; }).join('') || '<p class="dim">Aucun élève.</p>'; };
+  $('#q').oninput = draw; draw();
+  $('#list').onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; const row = b.closest('.item');
+    if (b.dataset.a === 'revoke') { if (!confirm('Retirer l’accès à cette formation ?')) return; act(async () => { await ok(sb.from('enrollments').delete().eq('id', b.dataset.id)); await students(); }, 'Accès retiré'); }
+    if (b.dataset.a === 'grant') act(async () => { await ok(sb.from('enrollments').upsert({ user_id: row.dataset.u, course_id: row.querySelector('select').value }, { onConflict: 'user_id,course_id' })); await students(); }, 'Accès donné ✓'); };
+}
+
+/* ---------- commandes ---------- */
+async function orders() {
+  const [os, ps] = await Promise.all([ok(sb.from('orders').select('*, courses(title)').order('created_at', { ascending:false }).limit(200)), profiles()]);
+  const pm = Object.fromEntries(ps.map(p => [p.id, p]));
+  app.innerHTML = `<h1>Commandes</h1><p class="dim small">Rembourser ici ne renvoie pas l’argent : fais le remboursement dans ton tableau de bord Kkiapay, puis marque la commande ici.</p><div class="card" id="ol">
+    ${os.map(o => `<div class="item" data-id="${o.id}" data-u="${o.user_id}" data-c="${o.course_id}"><div><b>${esc(o.courses ? o.courses.title : '—')}</b><span class="dim small">${who(pm[o.user_id])} · ${day(o.created_at)}${o.kkiapay_transaction_id ? ' · réf. ' + esc(o.kkiapay_transaction_id) : ''}</span></div><span>${xof(o.amount_xof)}</span><span class="badge ${o.status}">${STAT[o.status]}</span>
+      ${o.status === 'paid' ? '<button class="d sm" data-a="refund">Marquer remboursée</button>' : ''}${o.status === 'pending' ? '<button class="o sm" data-a="validate">Valider à la main</button>' : ''}</div>`).join('') || '<p class="dim">Aucune commande.</p>'}</div>`;
+  $('#ol').onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; const r = b.closest('.item'), id = r.dataset.id;
+    if (b.dataset.a === 'refund') { if (!confirm('Marquer remboursée et retirer l’accès de l’élève ?')) return; act(async () => { await ok(sb.from('orders').update({ status:'refunded' }).eq('id', id)); await ok(sb.from('enrollments').delete().eq('user_id', r.dataset.u).eq('course_id', r.dataset.c)); await orders(); }, 'Fait ✓'); }
+    if (b.dataset.a === 'validate') { if (!confirm('Vérifie d’abord le paiement dans Kkiapay. Valider et donner l’accès ?')) return; act(async () => { await ok(sb.from('orders').update({ status:'paid', paid_at:new Date().toISOString() }).eq('id', id)); await ok(sb.from('enrollments').upsert({ user_id:r.dataset.u, course_id:r.dataset.c, order_id:id }, { onConflict:'user_id,course_id' })); await orders(); }, 'Accès donné ✓'); } };
+}
+
+/* ---------- codes promo ---------- */
+async function promos() {
+  const ps = await ok(sb.from('promo_codes').select('*').order('code'));
+  app.innerHTML = `<h1>Codes promo</h1><form id="pf" class="card"><h2>Nouveau code</h2><div class="g2"><label>Code<input id="code" required placeholder="BIENVENUE"></label><label>Réduction (%)<input id="pct" type="number" min="1" max="100" required></label></div>
+    <div class="g2"><label>Utilisations max (facultatif)<input id="max" type="number" min="1"></label><label>Expire le (facultatif)<input id="exp" type="date"></label></div><div class="actions"><button>Créer le code</button></div></form>
+    <div class="card" id="pl">${ps.map(p => `<div class="item" data-id="${p.id}"><div><b>${esc(p.code)} · -${p.percent_off}%</b><span class="dim small">${p.used_count} utilisation${p.used_count > 1 ? 's' : ''}${p.max_uses ? ' sur ' + p.max_uses : ''}${p.expires_at ? ' · expire le ' + day(p.expires_at) : ''}</span></div><span class="badge ${p.is_active ? 'on-b' : 'pending'}">${p.is_active ? 'Actif' : 'Désactivé'}</span><button class="o sm" data-a="tog" data-on="${p.is_active}">${p.is_active ? 'Désactiver' : 'Activer'}</button><button class="d sm" data-a="del">Supprimer</button></div>`).join('') || '<p class="dim">Aucun code.</p>'}</div>`;
+  $('#pf').onsubmit = ev => { ev.preventDefault(); act(async () => { await ok(sb.from('promo_codes').insert({ code: val('code').toUpperCase(), percent_off: +val('pct'), max_uses: val('max') ? +val('max') : null, expires_at: val('exp') ? new Date(val('exp') + 'T23:59:59').toISOString() : null })); await promos(); }, 'Code créé ✓'); };
+  $('#pl').onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; const id = b.closest('.item').dataset.id;
+    if (b.dataset.a === 'tog') act(async () => { await ok(sb.from('promo_codes').update({ is_active: b.dataset.on !== 'true' }).eq('id', id)); await promos(); });
+    if (b.dataset.a === 'del' && confirm('Supprimer ce code ?')) act(async () => { await ok(sb.from('promo_codes').delete().eq('id', id)); await promos(); }); };
+}
+boot();
+</script>
+</body>
+</html>
