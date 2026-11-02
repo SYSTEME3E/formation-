@@ -1,4 +1,4 @@
-// Crée une commande "pending" avec le prix calculé côté serveur.
+// Vérifie le paiement auprès de Kkiapay, puis donne accès à la formation.
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const cors = {
@@ -19,42 +19,52 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: "Connexion requise." }, 401);
 
     const db = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const { slug, promo } = await req.json();
+    const { orderId, transactionId } = await req.json();
+    if (!orderId || !transactionId) return json({ error: "Données manquantes." }, 400);
 
-    const { data: course } = await db.from("courses").select("id, price_xof")
-      .eq("slug", String(slug)).eq("is_published", true).maybeSingle();
-    if (!course) return json({ error: "Formation introuvable." }, 404);
+    const { data: order } = await db.from("orders").select("*")
+      .eq("id", orderId).eq("user_id", user.id).maybeSingle();
+    if (!order) return json({ error: "Commande introuvable." }, 404);
+    if (order.status === "paid") return json({ ok: true });
+    if (order.status !== "pending") return json({ error: "Commande non valide." }, 400);
 
-    const { data: owned } = await db.from("enrollments").select("id")
-      .eq("user_id", user.id).eq("course_id", course.id).maybeSingle();
-    if (owned) return json({ error: "Tu as déjà accès à cette formation." }, 409);
+    // une transaction ne peut servir qu'une seule fois
+    const { data: used } = await db.from("orders").select("id")
+      .eq("kkiapay_transaction_id", String(transactionId)).maybeSingle();
+    if (used) return json({ error: "Cette transaction a déjà été utilisée." }, 409);
 
-    let amount: number = course.price_xof;
-    let promoId: string | null = null;
-    if (promo) {
-      const { data: p } = await db.from("promo_codes").select("*")
-        .eq("code", String(promo).trim().toUpperCase()).eq("is_active", true).maybeSingle();
-      const ok = p && (!p.expires_at || new Date(p.expires_at) > new Date()) &&
-        (p.max_uses == null || p.used_count < p.max_uses);
-      if (!ok) return json({ error: "Code promo invalide ou expiré." }, 400);
-      amount = Math.round(amount * (100 - p.percent_off) / 100);
-      promoId = p.id;
-    }
+    // vérification auprès de Kkiapay (clés privées : jamais dans le navigateur)
+    const sandbox = Deno.env.get("KKIAPAY_SANDBOX") !== "false";
+    const base = sandbox ? "https://api-sandbox.kkiapay.me" : "https://api.kkiapay.me";
+    const res = await fetch(base + "/api/v1/transactions/status", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": Deno.env.get("KKIAPAY_PUBLIC_KEY")!,
+        "X-PRIVATE-KEY": Deno.env.get("KKIAPAY_PRIVATE_KEY")!,
+        "X-SECRET-KEY": Deno.env.get("KKIAPAY_SECRET")!,
+      },
+      body: JSON.stringify({ transactionId }),
+    });
+    const t = await res.json();
+    if (t.status !== "SUCCESS") return json({ error: "Paiement non confirmé par Kkiapay." }, 402);
+    if (Number(t.amount) < order.amount_xof) return json({ error: "Montant payé incorrect." }, 402);
 
-    const free = amount === 0;
-    const { data: order, error } = await db.from("orders").insert({
-      user_id: user.id, course_id: course.id, amount_xof: amount, promo_code_id: promoId,
-      status: free ? "paid" : "pending", paid_at: free ? new Date().toISOString() : null,
-    }).select("id").single();
+    const { error } = await db.from("orders")
+      .update({ status: "paid", kkiapay_transaction_id: String(transactionId), paid_at: new Date().toISOString() })
+      .eq("id", order.id).eq("status", "pending");
     if (error) throw error;
 
-    if (free) {
-      await db.from("enrollments").upsert(
-        { user_id: user.id, course_id: course.id, order_id: order.id },
-        { onConflict: "user_id,course_id" },
-      );
+    await db.from("enrollments").upsert(
+      { user_id: user.id, course_id: order.course_id, order_id: order.id },
+      { onConflict: "user_id,course_id" },
+    );
+
+    if (order.promo_code_id) {
+      const { data: p } = await db.from("promo_codes").select("used_count").eq("id", order.promo_code_id).single();
+      if (p) await db.from("promo_codes").update({ used_count: p.used_count + 1 }).eq("id", order.promo_code_id);
     }
-    return json({ orderId: order.id, amount, free });
+    return json({ ok: true });
   } catch (e) {
     console.error(e);
     return json({ error: "Erreur serveur." }, 500);
