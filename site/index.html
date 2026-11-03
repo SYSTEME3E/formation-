@@ -9,14 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#ffffff; --card:#ffffff; --line:#dfe5f1; --blue:#1352f1; --yellow:#ffd60a; --ink:#0b1330; --dim:#5b6785; --lime:#c8f533; }
+  :root { --bg:#f4f6fb; --card:#ffffff; --line:#dfe5f1; --blue:#1352f1; --yellow:#ffd60a; --ink:#0b1330; --dim:#5b6785; --lime:#c8f533; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:400 1rem/1.6 Manrope, system-ui, sans-serif; }
   h1, h2, h3 { font-family:'Bricolage Grotesque', system-ui, sans-serif; line-height:1.12; margin:0; }
   a { color:inherit; text-decoration:none; }
   .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
   .dim { color:var(--dim); }
-  .top { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); }
+  .top { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid var(--line); }
   .top .wrap { display:flex; align-items:center; justify-content:space-between; height:60px; }
   .brand { font:800 1.15rem 'Bricolage Grotesque', sans-serif; } .brand span { color:var(--blue); }
   .nav { display:flex; gap:14px; align-items:center; font-weight:600; font-size:.92rem; }
@@ -92,8 +92,6 @@
   .dls { display:grid; gap:8px; margin-top:12px; } .dl { text-align:left; font:600 .95rem Manrope, sans-serif; background:#f4f6fb; border:1px solid var(--line); color:var(--ink); padding:12px 14px; border-radius:12px; cursor:pointer; }
   .actions { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:18px; } .actions .btn.b { padding:14px 26px; }
   @media (min-width:900px) { .spgrid { grid-template-columns:1fr 340px; } .side { position:sticky; top:80px; margin-top:0 !important; } }
-  footer { border-top:1px solid var(--line); padding:28px 0; color:var(--dim); font-size:.9rem; }
-  footer .wrap { display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between; } footer a { text-decoration:underline; margin-right:14px; }
   .center { text-align:center; padding:80px 20px; }
   .lft { display:flex; align-items:center; gap:12px; }
   #burger { width:42px; height:42px; padding:0; border-radius:12px; background:transparent; border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; cursor:pointer; flex:none; }
@@ -111,7 +109,26 @@
   .wa-float { position:fixed; right:18px; bottom:18px; z-index:40; width:58px; height:58px; border-radius:50%; background:#25d366; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,.25); transition:transform .15s; }
   .wa-float:hover { transform:scale(1.08); }
   .wa-float svg { width:32px; height:32px; fill:#fff; }
-  footer { padding-bottom:90px; }
+  /* programme, à apprendre, pied de page, barre du bas */
+  .learn { list-style:none; padding:0; margin:16px 0 0; display:grid; gap:14px; } .learn li { display:flex; gap:12px; align-items:flex-start; }
+  .learn li::before { content:"✓"; flex:none; width:30px; height:30px; border-radius:50%; background:#dcf5ea; color:#0a8f5a; display:flex; align-items:center; justify-content:center; font-weight:800; }
+  details.mod { padding:0; border-radius:20px; margin-top:12px; } .mod summary { align-items:center; gap:12px; padding:18px; } .mod summary::-webkit-details-marker { display:none; }
+  .mn { flex:none; font:800 1.7rem 'Bricolage Grotesque', sans-serif; color:var(--blue); } .mt2 { flex:1; min-width:0; } .mc { flex:none; color:var(--dim); font-weight:400; font-size:.9rem; }
+  .mod summary::after { content:""; flex:none; width:9px; height:9px; border-right:2px solid var(--dim); border-bottom:2px solid var(--dim); transform:rotate(45deg); margin:0 6px 4px 2px; transition:transform .15s; }
+  .mod[open] summary::after { transform:rotate(-135deg); margin-bottom:-3px; }
+  .mbody { padding:0 18px 18px; } .mdesc { color:var(--dim); margin:0 0 6px; } .les { padding-top:12px; } .les b { display:block; } .les small { display:block; color:var(--dim); }
+  footer { background:#0b1330; color:#cfd7ee; padding:36px 0 30px; font-size:.95rem; } footer h4 { margin:0 0 18px; font:800 1rem Manrope, sans-serif; letter-spacing:.12em; color:#fff; }
+  .fl a { display:flex; align-items:center; gap:12px; color:#fff; font-weight:700; font-size:1.05rem; margin:0 0 14px; word-break:break-all; } .fl svg { width:24px; height:24px; fill:#a9b8ff; flex:none; }
+  .soc { display:flex; flex-wrap:wrap; gap:14px; margin:22px 0 26px; } .soc a { width:52px; height:52px; border-radius:50%; background:#1a2442; display:flex; align-items:center; justify-content:center; } .soc svg { width:24px; height:24px; fill:#fff; }
+  .soc a[hidden], .fl a[hidden] { display:none; }
+  .fb { border-top:1px solid #243055; padding-top:20px; } .fb p { margin:0 0 12px; font-weight:600; } .fb .lg a { display:inline-block; margin:0 18px 8px 0; color:#cfd7ee; font-weight:600; }
+  #bnav { display:none; }
+  @media (max-width:899px) {
+    body { padding-bottom:70px; } .wa-float { bottom:84px; }
+    #bnav { position:fixed; left:0; right:0; bottom:0; z-index:20; background:#fff; border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(4, 1fr); padding:6px 4px calc(6px + env(safe-area-inset-bottom)); }
+    #bnav a, #bnav button { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:0; font:700 .72rem Manrope, sans-serif; color:var(--dim); padding:4px 0; cursor:pointer; }
+    #bnav .on { color:var(--blue); } #bnav svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  }
 </style>
 </head>
 <body>
@@ -134,14 +151,28 @@
 
 <main id="app"></main>
 
-<a class="wa-float" href="https://wa.me/2290151762341" target="_blank" rel="noopener" aria-label="Contacter sur WhatsApp">
+<a class="wa-float" id="wa-fl" href="https://wa.me/2290151762341" target="_blank" rel="noopener" aria-label="Contacter sur WhatsApp">
   <svg viewBox="0 0 32 32"><path d="M16.04 3C8.84 3 3 8.83 3 16c0 2.3.6 4.5 1.74 6.46L3 29l6.7-1.7A13 13 0 0 0 16.04 29C23.2 29 29 23.17 29 16S23.2 3 16.04 3zm0 23.8c-2 0-3.9-.55-5.58-1.55l-.4-.24-3.98 1.01 1.06-3.87-.26-.4A10.7 10.7 0 0 1 5.2 16c0-5.96 4.88-10.8 10.84-10.8S26.8 10.04 26.8 16 22 26.8 16.04 26.8zm5.95-8.1c-.33-.16-1.93-.95-2.23-1.06-.3-.1-.52-.16-.74.17-.22.32-.85 1.06-1.04 1.28-.19.22-.38.24-.7.08-.33-.16-1.38-.5-2.62-1.6-.97-.86-1.62-1.92-1.8-2.24-.2-.33-.02-.5.14-.66.15-.15.33-.38.5-.57.16-.2.22-.33.33-.55.1-.22.05-.4-.03-.57-.08-.16-.74-1.78-1.01-2.44-.27-.64-.54-.55-.74-.56h-.63c-.22 0-.57.08-.87.4-.3.33-1.14 1.12-1.14 2.72s1.17 3.15 1.33 3.37c.16.22 2.3 3.5 5.56 4.92.78.33 1.38.53 1.85.68.78.25 1.49.21 2.05.13.63-.1 1.93-.79 2.2-1.55.27-.76.27-1.4.19-1.55-.08-.14-.3-.22-.63-.38z"/></svg>
 </a>
 
+<svg style="display:none"><defs>
+  <symbol id="i-wa" viewBox="0 0 32 32"><path d="M16.04 3C8.84 3 3 8.83 3 16c0 2.3.6 4.5 1.74 6.46L3 29l6.7-1.7A13 13 0 0 0 16.04 29C23.2 29 29 23.17 29 16S23.2 3 16.04 3zm0 23.8c-2 0-3.9-.55-5.58-1.55l-.4-.24-3.98 1.01 1.06-3.87-.26-.4A10.7 10.7 0 0 1 5.2 16c0-5.96 4.88-10.8 10.84-10.8S26.8 10.04 26.8 16 22 26.8 16.04 26.8zm5.95-8.1c-.33-.16-1.93-.95-2.23-1.06-.3-.1-.52-.16-.74.17-.22.32-.85 1.06-1.04 1.28-.19.22-.38.24-.7.08-.33-.16-1.38-.5-2.62-1.6-.97-.86-1.62-1.92-1.8-2.24-.2-.33-.02-.5.14-.66.15-.15.33-.38.5-.57.16-.2.22-.33.33-.55.1-.22.05-.4-.03-.57-.08-.16-.74-1.78-1.01-2.44-.27-.64-.54-.55-.74-.56h-.63c-.22 0-.57.08-.87.4-.3.33-1.14 1.12-1.14 2.72s1.17 3.15 1.33 3.37c.16.22 2.3 3.5 5.56 4.92.78.33 1.38.53 1.85.68.78.25 1.49.21 2.05.13.63-.1 1.93-.79 2.2-1.55.27-.76.27-1.4.19-1.55-.08-.14-.3-.22-.63-.38z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm1 2.4V17h16V7.4l-8 5.3-8-5.3z"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.6-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H8v3h2.5V21h3z"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><path d="M7.5 3h9A4.5 4.5 0 0 1 21 7.5v9a4.5 4.5 0 0 1-4.5 4.5h-9A4.5 4.5 0 0 1 3 16.5v-9A4.5 4.5 0 0 1 7.5 3zm0 1.8A2.7 2.7 0 0 0 4.8 7.5v9a2.7 2.7 0 0 0 2.7 2.7h9a2.7 2.7 0 0 0 2.7-2.7v-9a2.7 2.7 0 0 0-2.7-2.7h-9zM12 7.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 1.8a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4zm4.9-2.6a1.05 1.05 0 1 1 0 2.1 1.05 1.05 0 0 1 0-2.1z"/></symbol>
+  <symbol id="i-tt" viewBox="0 0 24 24"><path d="M16.5 3h-2.9v11.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V8.9a5.6 5.6 0 1 0 4.7 5.5V9.2a6.6 6.6 0 0 0 3.8 1.2V7.5a3.9 3.9 0 0 1-3.8-4.5z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M17.8 3h3L14.2 10.5 22 21h-6.1l-4.8-6.3L5.6 21h-3l7.1-8L2.2 3h6.2l4.3 5.8L17.8 3zm-1.1 16.2h1.7L7.6 4.7H5.8l10.9 14.5z"/></symbol>
+</defs></svg>
 <footer><div class="wrap">
-  <span>© <span id="y"></span> Eric Kpakpo · Cotonou</span>
-  <span><a id="f-wa" target="_blank" rel="noopener">WhatsApp</a><a id="f-fb" target="_blank" rel="noopener">Facebook</a><a id="f-tt" target="_blank" rel="noopener">TikTok</a></span>
+  <h4>UNE QUESTION ?</h4>
+  <div class="fl"><a id="f-wa" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>Support WhatsApp</a><a id="f-mail" hidden><svg><use href="#i-mail"/></svg><span id="f-mailt"></span></a></div>
+  <div class="soc"><a id="f-fb" target="_blank" rel="noopener" aria-label="Facebook"><svg><use href="#i-fb"/></svg></a><a id="f-ig" target="_blank" rel="noopener" aria-label="Instagram" hidden><svg><use href="#i-ig"/></svg></a><a id="f-tt" target="_blank" rel="noopener" aria-label="TikTok"><svg><use href="#i-tt"/></svg></a><a id="f-x" target="_blank" rel="noopener" aria-label="X" hidden><svg><use href="#i-x"/></svg></a></div>
+  <div class="fb"><p>© <span id="y"></span> Eric Kpakpo · Cotonou</p><div class="lg"><a href="#/legal/cgu">CGU</a><a href="#/legal/confidentialite">Confidentialité</a><a href="#/legal/cookies">Cookies</a><a href="#/legal/mentions">Mentions légales</a></div></div>
 </div></footer>
+<nav id="bnav"><a href="#/" data-b="home"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Accueil</a>
+  <a href="#/" id="b-cat" data-b="cat"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>Formations</a>
+  <a href="#/mes-formations" data-b="mine"><svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11"/></svg>Mes cours</a>
+  <button id="b-more"><svg viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01" stroke-width="3.5"/></svg>Plus</button></nav>
 
 <script src="https://cdn.kkiapay.me/k.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -155,7 +186,7 @@ const CFG = {
 const LINKS = {
   wa: 'https://wa.me/2290151762341',
   fb: 'https://www.facebook.com/profile.php?id=61595605702706',
-  tt: 'https://www.tiktok.com/@digital55237'
+  tt: 'https://www.tiktok.com/@digital55237', ig: '', x: '', mail: ''
 };
 
 const demo = !CFG.url || !CFG.key;
@@ -236,9 +267,10 @@ async function detail(slug) {
   let owned = false;
   if (!demo && session) { const q = await sb.from('enrollments').select('id').eq('course_id', c.id).eq('user_id', session.user.id).limit(1); owned = !!(q.data && q.data.length); }
   document.title = c.title + ' · Eric Kpakpo';
-  const mods = modules.map((m, i) => { const ls = lessons.filter(l => l.module_id === m.id), t = stats(ls);
-    return `<details${i === 0 ? ' open' : ''}><summary><span>${String(i + 1).padStart(2, '0')} · ${esc(m.title)}</span><small>${t.n} leçon${t.n > 1 ? 's' : ''} · ${dur(t.min)}</small></summary>
-    ${ls.map(l => `<div class="les"><span>${esc(l.title)}${l.is_free_preview ? '<span class="free">Aperçu gratuit</span>' : ''}</span><i>${dur(l.duration_min)}</i></div>`).join('')}</details>`; }).join('');
+  const mods = modules.map((m, i) => { const ls = lessons.filter(l => l.module_id === m.id);
+    return `<details class="mod"><summary><span class="mn">${String(m.position ?? i + 1).padStart(2, '0')}</span><span class="mt2">${esc(m.title)}</span><span class="mc">${ls.length} leçon${ls.length > 1 ? 's' : ''}</span></summary>
+    <div class="mbody">${m.description ? `<p class="mdesc">${esc(m.description)}</p>` : ''}${ls.map(l => `<div class="les"><span><b>${esc(l.title)}${l.is_free_preview ? '<span class="free">Aperçu gratuit</span>' : ''}</b>${l.summary ? `<small>${esc(l.summary)}</small>` : ''}</span><i>${dur(l.duration_min)}</i></div>`).join('')}</div></details>`; }).join('');
+  const learn = String(c.learn_points || '').split('\n').map(x => x.trim()).filter(Boolean);
   app.innerHTML = `<div class="wrap detail">
     <div><div class="crumb"><a href="#/">Formations</a> › ${esc(c.categories?.name || '')}</div>
       <span class="badge">${esc(c.categories?.name || 'Formation')}</span><h1>${esc(c.title)}</h1>
@@ -248,8 +280,9 @@ async function detail(slug) {
       <div class="bd">${owned ? `<a class="btn b" href="#/cours/${encodeURIComponent(c.slug)}">Continuer la formation</a>` : `<a class="btn b" href="#/paiement/${encodeURIComponent(c.slug)}">Démarrer maintenant</a>`}
       <a class="btn o" href="${LINKS.wa}" target="_blank" rel="noopener">Poser une question sur WhatsApp</a>
       <ul class="ok"><li>${s.n} leçons</li><li>${dur(s.min)} de contenu</li><li>Fichiers à télécharger</li><li>Accès immédiat après le paiement</li></ul></div></aside>
-    ${c.description ? `<div class="box"><h2>Description</h2><p style="margin:10px 0 0;white-space:pre-line">${esc(c.description)}</p></div>` : ''}
-    <div class="box"><h2>Contenu de la formation</h2><p class="dim" style="font-size:.85rem;margin:4px 0 0">${modules.length} section${modules.length > 1 ? 's' : ''} · ${s.n} leçons · ${dur(s.min)}</p>${mods}</div></div>`;
+    ${learn.length ? `<div class="box"><h2>Ce que tu vas apprendre</h2><ul class="learn">${learn.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+    ${c.description ? `<div class="box"><h2>À propos de cette formation</h2><p style="margin:10px 0 0;white-space:pre-line">${esc(c.description)}</p></div>` : ''}
+    <div class="box"><h2>Programme de la formation</h2><p class="dim" style="font-size:.85rem;margin:4px 0 0">${modules.length} module${modules.length > 1 ? 's' : ''} · ${s.n} leçon${s.n > 1 ? 's' : ''}</p>${mods}</div></div>`;
 }
 function soon() { app.innerHTML = '<div class="center"><h2>Bientôt disponible</h2><p class="dim">L’espace de cours arrive à la prochaine étape.</p><a class="btn y" href="#/">Retour aux formations</a></div>'; }
 
@@ -474,12 +507,94 @@ async function space(slug, lid) {
   draw();
 }
 
+/* ---- réglages du site (modifiables dans l'admin) & pages légales ---- */
+let SET = {};
+async function loadSettings() {
+  if (demo) return;
+  try { const r = await sb.from('site_settings').select('key, value'); (r.data || []).forEach(x => SET[x.key] = x.value); } catch (_) {}
+  const w = (SET.whatsapp || '').replace(/\D/g, ''); if (w) LINKS.wa = 'https://wa.me/' + w;
+  ['facebook:fb', 'tiktok:tt', 'instagram:ig', 'x:x'].forEach(k => { const [a, b] = k.split(':'); if (SET[a] !== undefined) LINKS[b] = SET[a]; });
+  LINKS.mail = SET.support_email || '';
+}
+function applyLinks() {
+  const set = (id, href) => { const a = document.getElementById(id); a.hidden = !href; if (href) a.href = href; };
+  set('f-wa', LINKS.wa); set('f-fb', LINKS.fb); set('f-tt', LINKS.tt); set('f-ig', LINKS.ig); set('f-x', LINKS.x);
+  set('f-mail', LINKS.mail && 'mailto:' + LINKS.mail); document.getElementById('f-mailt').textContent = LINKS.mail;
+  document.getElementById('wa-fl').href = LINKS.wa;
+}
+$('#b-cat').onclick = () => setTimeout(() => { const f = document.getElementById('formations'); if (f) f.scrollIntoView({ behavior: 'smooth' }); }, 150);
+$('#b-more').onclick = () => { if (session) menu(true); else location.hash = '#/connexion'; };
+const LEGAL = {
+  cgu: ['Conditions générales d’utilisation', `## 1. Objet
+Ces conditions encadrent l’utilisation du site d’Eric Kpakpo et l’achat de ses formations en ligne.
+
+## 2. Compte et accès
+Ton compte est personnel. Tu t’engages à ne pas partager tes identifiants ni l’accès aux cours avec d’autres personnes. L’accès à une formation est ouvert dès que le paiement est confirmé et reste disponible depuis ton espace « Mes cours ».
+
+## 3. Prix et paiement
+Les prix sont affichés en francs CFA (XOF). Le paiement se fait par Mobile Money ou carte bancaire via Kkiapay. Une commande est validée uniquement après confirmation du paiement.
+
+## 4. Contenus et propriété intellectuelle
+Les vidéos, textes et fichiers sont protégés. Il est interdit de les copier, revendre, publier ou diffuser sans autorisation écrite.
+
+## 5. Remboursement
+Les formations étant accessibles immédiatement après le paiement, les ventes sont en principe définitives. Si tu as été débité sans accès, ou si un contenu est inaccessible, contacte-nous : nous corrigerons le problème ou étudierons un remboursement.
+
+## 6. Résultats
+Les formations donnent des méthodes et des conseils. Les résultats dépendent de ton travail et de ta situation : aucun gain n’est garanti.
+
+## 7. Règles de conduite
+Tout comportement abusif, toute fraude ou tout partage du contenu peut entraîner la suppression du compte, sans remboursement.
+
+## 8. Droit applicable
+Ces conditions sont soumises au droit applicable en République du Bénin.`],
+  confidentialite: ['Politique de confidentialité', `## Données collectées
+Lors de la création de ton compte et de ton achat, nous collectons : prénom, nom, e-mail, pays, numéro WhatsApp, commandes et progression dans les cours.
+
+## Utilisation
+Ces données servent à créer ton compte, te donner accès aux formations, traiter ton paiement, te contacter pour le support et suivre ta progression. Nous ne vendons pas tes données.
+
+## Paiement
+Le paiement est traité par Kkiapay. Nous ne voyons ni ne stockons tes numéros de carte ou de Mobile Money.
+
+## Hébergement
+Le site est hébergé par Vercel et les données sont stockées chez Supabase.
+
+## Tes droits
+Tu peux modifier tes informations et ton mot de passe dans « Mes informations ». Pour consulter ou supprimer tes données, contacte-nous via le support.`],
+  cookies: ['Cookies', `## Ce que nous utilisons
+Le site utilise uniquement le stockage nécessaire à son fonctionnement, par exemple pour garder ta session de connexion ouverte. Nous n’utilisons pas de cookies publicitaires.
+
+## Services tiers
+Quand un lecteur vidéo (YouTube, Vimeo) ou la fenêtre de paiement Kkiapay s’affiche, ces services peuvent déposer leurs propres cookies, selon leurs règles.
+
+## Les gérer
+Tu peux supprimer les cookies depuis les réglages de ton navigateur. Cela peut te déconnecter.`],
+  mentions: ['Mentions légales', `## Éditeur du site
+Eric Kpakpo, Cotonou, Bénin.
+
+## Contact
+Via le support WhatsApp ou l’e-mail indiqués en bas de page.
+
+## Hébergement
+Site : Vercel Inc. Données : Supabase.
+
+## Paiements
+Kkiapay.`]
+};
+async function legal(k) {
+  const d = LEGAL[k]; if (!d) { location.hash = '#/'; return; }
+  const text = SET['legal_' + (k === 'confidentialite' ? 'privacy' : k)] || d[1];
+  document.title = d[0] + ' · Eric Kpakpo';
+  app.innerHTML = `<div class="wrap narrow pad" style="max-width:760px"><div class="box"><h1 class="h1s">${esc(d[0])}</h1>${text.split(/\n\s*\n/).map(b => b.startsWith('## ') ? `<h3 style="margin:18px 0 6px">${esc(b.slice(3))}</h3>` : `<p style="margin:0 0 6px;white-space:pre-line">${esc(b)}</p>`).join('')}</div></div>`;
+}
 async function route() {
   const m = (location.hash.slice(1) || '/').split('/'), R = m[1], arg = decodeURIComponent(m[2] || '');
-  const light = ['formation', 'paiement', 'connexion', 'succes', 'mes-formations', 'cours', 'compte'].includes(R);
+  const light = ['formation', 'paiement', 'connexion', 'succes', 'mes-formations', 'cours', 'compte', 'legal'].includes(R);
   document.body.classList.toggle('light', light);
   if (!light) document.title = 'Formations · Eric Kpakpo';
   document.querySelectorAll('#snav a').forEach(a => a.classList.toggle('on', a.dataset.r === (R === 'cours' ? 'mes-formations' : R || '')));
+  document.querySelectorAll('#bnav [data-b]').forEach(a => a.classList.toggle('on', a.dataset.b === (['mes-formations', 'cours'].includes(R) ? 'mine' : !R ? 'home' : '')));
   menu(false); scrollTo(0, 0);
   try {
     if (R === 'formation') await detail(arg);
@@ -488,16 +603,17 @@ async function route() {
     else if (R === 'connexion') login();
     else if (R === 'mes-formations') await mine();
     else if (R === 'compte') await account();
+    else if (R === 'legal') await legal(arg);
     else if (R === 'cours') await space(arg, decodeURIComponent(m[3] || ''));
     else await home();
   } catch (e) { console.error(e); app.innerHTML = '<div class="center"><p>Une erreur est survenue. Réessaie dans un instant.</p></div>'; }
 }
 document.getElementById('y').textContent = new Date().getFullYear();
-document.getElementById('f-wa').href = LINKS.wa; document.getElementById('f-fb').href = LINKS.fb; document.getElementById('f-tt').href = LINKS.tt;
+applyLinks();
 document.getElementById('demo').hidden = !demo;
 (async () => {
   if (!demo) { const r = await sb.auth.getSession(); session = r.data.session; sb.auth.onAuthStateChange((_e, x) => { session = x; updateNav(); }); }
-  updateNav(); wirePay(); addEventListener('hashchange', route); route();
+  await loadSettings(); applyLinks(); updateNav(); wirePay(); addEventListener('hashchange', route); route();
 })();
 </script>
 </body>
