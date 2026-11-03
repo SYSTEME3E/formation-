@@ -9,8 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#050608; --card:#0e1219; --line:#1c2535; --blue:#2f80ff; --yellow:#ffd60a; --ink:#fff; --dim:#aab4c3; --lime:#c8f533; }
-  body.light { --bg:#f4f6fb; --card:#fff; --line:#dfe5f1; --blue:#1352f1; --ink:#0b1330; --dim:#5b6785; }
+  :root { --bg:#ffffff; --card:#ffffff; --line:#dfe5f1; --blue:#1352f1; --yellow:#ffd60a; --ink:#0b1330; --dim:#5b6785; --lime:#c8f533; }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font:400 1rem/1.6 Manrope, system-ui, sans-serif; }
   h1, h2, h3 { font-family:'Bricolage Grotesque', system-ui, sans-serif; line-height:1.12; margin:0; }
@@ -19,12 +18,12 @@
   .dim { color:var(--dim); }
   .top { position:sticky; top:0; z-index:5; background:var(--bg); border-bottom:1px solid var(--line); }
   .top .wrap { display:flex; align-items:center; justify-content:space-between; height:60px; }
-  .brand { font:800 1.15rem 'Bricolage Grotesque', sans-serif; } .brand span { color:var(--yellow); } body.light .brand span { color:var(--blue); }
+  .brand { font:800 1.15rem 'Bricolage Grotesque', sans-serif; } .brand span { color:var(--blue); }
   .nav { display:flex; gap:14px; align-items:center; font-weight:600; font-size:.92rem; }
   .pill { border:1px solid var(--line); padding:6px 14px; border-radius:20px; }
-  .hero { padding:56px 0 40px; background:radial-gradient(60% 60% at 85% 0%, rgba(47,128,255,.35), transparent 70%); }
+  .hero { padding:56px 0 40px; background:radial-gradient(60% 60% at 85% 0%, rgba(47,128,255,.15), transparent 70%); }
   body.light .hero { display:none; }
-  .tag { color:var(--yellow); font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:.8rem; margin:0 0 10px; }
+  .tag { color:var(--blue); font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:.8rem; margin:0 0 10px; }
   h1 { font-size:clamp(2.2rem, 8vw, 3.6rem); } h1 span { color:var(--blue); }
   .lead { color:var(--dim); max-width:540px; margin:14px 0 0; }
   h2 { font-size:clamp(1.6rem, 5vw, 2.2rem); } h2::after { content:""; display:block; width:56px; height:5px; background:var(--yellow); margin-top:10px; border-radius:3px; }
@@ -37,9 +36,9 @@
   @media (min-width:960px) { .grid { grid-template-columns:repeat(3, 1fr); } }
   .card { display:block; background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; transition:transform .15s, border-color .15s; }
   .card:hover { transform:translateY(-3px); border-color:var(--blue); }
-  .cover { aspect-ratio:16/9; width:100%; object-fit:cover; display:flex; align-items:flex-end; padding:14px; background:linear-gradient(135deg, #14233f, #2f80ff); font:800 1.2rem 'Bricolage Grotesque', sans-serif; }
+  .cover { aspect-ratio:16/9; width:100%; object-fit:cover; display:flex; align-items:flex-end; padding:14px; background:linear-gradient(135deg, #14233f, #2f80ff); color:#fff; font:800 1.2rem 'Bricolage Grotesque', sans-serif; }
   .cbody { padding:16px; }
-  .cat { color:var(--yellow); font-weight:700; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; }
+  .cat { color:var(--blue); font-weight:700; font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; }
   .card h3 { font-size:1.15rem; margin:6px 0 8px; }
   .meta { color:var(--dim); font-size:.85rem; }
   .price { margin-top:12px; font:800 1.2rem 'Bricolage Grotesque', sans-serif; } .price s { color:var(--dim); font:400 .85rem Manrope, sans-serif; margin-left:6px; }
@@ -51,14 +50,14 @@
   .detail h1 { font-size:clamp(1.9rem, 6vw, 2.8rem); color:var(--ink); }
   .badge { display:inline-block; background:#e1e8ff; color:var(--blue); font-weight:700; font-size:.78rem; padding:3px 12px; border-radius:12px; margin:0 6px 12px 0; }
   .tiles { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
-  .tile { background:var(--card); border-radius:14px; padding:14px; box-shadow:0 1px 0 var(--line); } .tile b { display:block; font:800 1.15rem 'Bricolage Grotesque', sans-serif; } .tile span { color:var(--dim); font-size:.85rem; }
-  .box { background:var(--card); border-radius:18px; padding:22px; box-shadow:0 1px 0 var(--line); }
+  .tile { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px; box-shadow:0 1px 0 var(--line); } .tile b { display:block; font:800 1.15rem 'Bricolage Grotesque', sans-serif; } .tile span { color:var(--dim); font-size:.85rem; }
+  .box { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; box-shadow:0 1px 0 var(--line); }
   .box h2 { font-size:1.35rem; } .box h2::after { display:none; }
   details { background:#f4f6fb; border-radius:12px; margin-top:10px; padding:12px 14px; }
   summary { cursor:pointer; font-weight:700; list-style:none; display:flex; justify-content:space-between; gap:10px; } summary small { color:var(--dim); font-weight:400; flex:none; }
   .les { display:flex; justify-content:space-between; gap:10px; padding:8px 0 0; font-size:.92rem; } .les i { color:var(--dim); font-style:normal; flex:none; }
   .free { background:#e1e8ff; color:var(--blue); font-size:.72rem; font-weight:700; padding:1px 8px; border-radius:10px; margin-left:6px; }
-  .buy { background:var(--card); border-radius:20px; overflow:hidden; box-shadow:0 8px 30px rgba(19,82,241,.15); }
+  .buy { background:var(--card); border:1px solid var(--line); border-radius:20px; overflow:hidden; box-shadow:0 8px 30px rgba(19,82,241,.15); }
   .buy .hd { background:var(--blue); color:#fff; padding:22px; } .buy .hd small { letter-spacing:.1em; font-weight:700; opacity:.85; }
   .buy .hd b { display:block; font:800 2.2rem 'Bricolage Grotesque', sans-serif; margin-top:6px; } .buy .hd s { opacity:.8; }
   .buy .bd { padding:20px; display:grid; gap:10px; }
@@ -82,7 +81,6 @@
   .row { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
   .co { display:grid; gap:16px; padding-top:30px; padding-bottom:64px; } .sum { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); }
   @media (min-width:900px) { .co { grid-template-columns:1fr 360px; } .co .buy { grid-column:2; grid-row:1; } }
-  body.light .cat { color:var(--blue); }
   .vid { aspect-ratio:16/9; background:#0b1330; border-radius:16px; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#8fa0c8; }
   .vid iframe, .vid video { width:100%; height:100%; border:0; background:#000; }
   .prog { margin:16px 0 6px; } .bar { height:8px; background:#dfe5f1; border-radius:4px; } .bar i { display:block; height:100%; background:var(--blue); border-radius:4px; }
@@ -109,6 +107,11 @@
   #snav a { display:block; padding:13px 14px; border-radius:12px; font-weight:700; color:var(--dim); }
   #snav a.on { background:var(--blue); color:#fff; }
   #side .btn { width:100%; }
+  /* bouton WhatsApp flottant */
+  .wa-float { position:fixed; right:18px; bottom:18px; z-index:40; width:58px; height:58px; border-radius:50%; background:#25d366; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,.25); transition:transform .15s; }
+  .wa-float:hover { transform:scale(1.08); }
+  .wa-float svg { width:32px; height:32px; fill:#fff; }
+  footer { padding-bottom:90px; }
 </style>
 </head>
 <body>
@@ -130,6 +133,10 @@
 </div></header>
 
 <main id="app"></main>
+
+<a class="wa-float" href="https://wa.me/2290151762341" target="_blank" rel="noopener" aria-label="Contacter sur WhatsApp">
+  <svg viewBox="0 0 32 32"><path d="M16.04 3C8.84 3 3 8.83 3 16c0 2.3.6 4.5 1.74 6.46L3 29l6.7-1.7A13 13 0 0 0 16.04 29C23.2 29 29 23.17 29 16S23.2 3 16.04 3zm0 23.8c-2 0-3.9-.55-5.58-1.55l-.4-.24-3.98 1.01 1.06-3.87-.26-.4A10.7 10.7 0 0 1 5.2 16c0-5.96 4.88-10.8 10.84-10.8S26.8 10.04 26.8 16 22 26.8 16.04 26.8zm5.95-8.1c-.33-.16-1.93-.95-2.23-1.06-.3-.1-.52-.16-.74.17-.22.32-.85 1.06-1.04 1.28-.19.22-.38.24-.7.08-.33-.16-1.38-.5-2.62-1.6-.97-.86-1.62-1.92-1.8-2.24-.2-.33-.02-.5.14-.66.15-.15.33-.38.5-.57.16-.2.22-.33.33-.55.1-.22.05-.4-.03-.57-.08-.16-.74-1.78-1.01-2.44-.27-.64-.54-.55-.74-.56h-.63c-.22 0-.57.08-.87.4-.3.33-1.14 1.12-1.14 2.72s1.17 3.15 1.33 3.37c.16.22 2.3 3.5 5.56 4.92.78.33 1.38.53 1.85.68.78.25 1.49.21 2.05.13.63-.1 1.93-.79 2.2-1.55.27-.76.27-1.4.19-1.55-.08-.14-.3-.22-.63-.38z"/></svg>
+</a>
 
 <footer><div class="wrap">
   <span>© <span id="y"></span> Eric Kpakpo · Cotonou</span>
