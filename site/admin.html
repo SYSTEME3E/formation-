@@ -17,8 +17,16 @@
   #bar { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid var(--line); }
   #bar .wrap { display:flex; align-items:center; gap:12px; height:56px; }
   .brand { font:800 1.05rem 'Bricolage Grotesque', sans-serif; color:var(--blue); flex:none; }
-  #tabs { display:flex; gap:4px; overflow-x:auto; flex:1; } #tabs a { flex:none; padding:7px 13px; border-radius:20px; font-weight:700; font-size:.9rem; color:var(--dim); }
+  #burger { width:42px; height:42px; padding:0; border-radius:12px; background:#fff; border:2px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; flex:none; }
+  #burger i { display:block; width:20px; height:2.5px; border-radius:2px; background:var(--ink); }
+  #veil { position:fixed; inset:0; background:rgba(11,19,48,.45); z-index:30; opacity:0; pointer-events:none; transition:opacity .2s; }
+  #side { position:fixed; top:0; left:0; bottom:0; width:270px; max-width:82vw; background:#fff; z-index:31; transform:translateX(-100%); transition:transform .22s ease; display:flex; flex-direction:column; padding:18px 14px; box-shadow:2px 0 24px rgba(11,19,48,.15); }
+  body.menu #side { transform:none; } body.menu #veil { opacity:1; pointer-events:auto; }
+  #side .brand { font-size:1.2rem; margin:4px 8px 18px; }
+  #tabs { display:flex; flex-direction:column; gap:4px; flex:1; overflow-y:auto; }
+  #tabs a { padding:12px 14px; border-radius:12px; font-weight:700; color:var(--dim); }
   #tabs a.on { background:var(--blue); color:#fff; }
+  #side #out { margin-top:12px; width:100%; }
   main { padding:22px 0 80px; }
   .card { background:var(--card); border-radius:16px; padding:18px; margin-bottom:16px; box-shadow:0 1px 0 var(--line); }
   .tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:16px; }
@@ -47,9 +55,11 @@
 </style>
 </head>
 <body>
-<header id="bar" hidden><div class="wrap"><span class="brand">Admin</span>
+<header id="bar" hidden><div class="wrap"><button id="burger" aria-label="Menu"><i></i><i></i><i></i></button><span class="brand">Admin</span></div></header>
+<div id="veil"></div>
+<aside id="side"><span class="brand">Admin · Formations</span>
   <nav id="tabs"><a href="#/dash">Tableau de bord</a><a href="#/courses">Formations</a><a href="#/students">Élèves</a><a href="#/orders">Commandes</a><a href="#/promos">Promos</a></nav>
-  <button class="o sm" id="out">Sortir</button></div></header>
+  <button class="o sm" id="out">Sortir</button></aside>
 <main class="wrap" id="app"><p class="dim">Chargement…</p></main>
 <div id="toast" hidden></div>
 
@@ -84,7 +94,11 @@ async function boot() {
   const a = await sb.rpc('is_admin'); if (a.data !== true) { await sb.auth.signOut(); return login('Ce compte n’est pas administrateur.'); }
   $('#bar').hidden = false; removeEventListener('hashchange', route); addEventListener('hashchange', route); route();
 }
-$('#out').onclick = async () => { await sb.auth.signOut(); login(); };
+const menu = on => document.body.classList.toggle('menu', on);
+$('#burger').onclick = () => menu(true);
+$('#veil').onclick = () => menu(false);
+$('#tabs').onclick = e => { if (e.target.closest('a')) menu(false); };
+$('#out').onclick = async () => { menu(false); await sb.auth.signOut(); login(); };
 
 async function route() {
   const [, v, id] = (location.hash || '#/dash').split('/');
