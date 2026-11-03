@@ -52,6 +52,9 @@
   #toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:12px 20px; border-radius:24px; font-weight:700; z-index:20; max-width:90vw; } #toast.bad { background:var(--red); }
   .center { max-width:400px; margin:60px auto; }
   .msg { background:#ffe9e7; color:#9b2c00; padding:10px 14px; border-radius:12px; margin-top:12px; }
+  .bar { height:10px; border-radius:6px; background:#e8edf7; margin:4px 0 12px; } .bar i { display:block; height:100%; border-radius:6px; background:var(--blue); } .bar i.g { background:#22c55e; }
+  .lg { display:flex; justify-content:space-between; gap:10px; font-size:.9rem; } .lg b { font-weight:700; }
+  .ref { font-size:.8rem; font-weight:700; } .ref.y { color:var(--green); } .ref.n { color:var(--red); }
 </style>
 </head>
 <body>
@@ -123,15 +126,20 @@ async function route() {
   try { await ({ courses, course: () => editor(id), students, orders, promos, settings }[v] || dash)(); }
   catch (e) { console.error(e); app.innerHTML = `<div class="card"><h2>Erreur</h2><p>${esc(e.message || '')}</p></div>`; }
 }
+const REFUND_MAX = 2; // 2 vidéos regardées ou plus = non remboursable
+const watch = async () => Object.fromEntries((await ok(sb.rpc('admin_watch_stats'))).map(w => [w.user_id + '|' + w.course_id, w]));
+const bars = (rows, cls) => rows.length ? rows.map(r => `<div class="lg"><span>${esc(r.label)}</span><b>${r.n}</b></div><div class="bar"><i class="${cls || ''}" style="width:${Math.max(3, r.n * 100 / Math.max(...rows.map(x => x.n)))}%"></i></div>`).join('') : '<p class="dim">Pas encore de données.</p>';
 const profiles = () => ok(sb.from('profiles').select('*').order('created_at', { ascending:false }));
 const who = p => p ? esc(((p.first_name || '') + ' ' + (p.last_name || '')).trim() || p.email || 'Élève') : 'Élève supprimé';
 
 /* ---------- tableau de bord ---------- */
 async function dash() {
-  const [st, os, ps] = await Promise.all([ok(sb.rpc('admin_stats')), ok(sb.from('orders').select('*, courses(title)').order('created_at', { ascending:false }).limit(8)), profiles()]);
+  const [st, os, ps, ch] = await Promise.all([ok(sb.rpc('admin_stats')), ok(sb.from('orders').select('*, courses(title)').order('created_at', { ascending:false }).limit(8)), profiles(), ok(sb.rpc('admin_charts'))]);
   const pm = Object.fromEntries(ps.map(p => [p.id, p]));
   app.innerHTML = `<h1>Tableau de bord</h1><div class="tiles"><div class="tile"><b>${st.students}</b><span>Élèves</span></div><div class="tile"><b>${st.orders_paid}</b><span>Ventes payées</span></div><div class="tile"><b>${xof(st.revenue_xof)}</b><span>Revenu</span></div></div>
-    <div class="card"><h2>Dernières commandes</h2>${os.map(o => `<div class="item"><div><b>${esc(o.courses ? o.courses.title : '—')}</b><span class="dim small">${who(pm[o.user_id])} · ${day(o.created_at)}</span></div><span>${xof(o.amount_xof)}</span><span class="badge ${o.status}">${STAT[o.status]}</span></div>`).join('') || '<p class="dim">Aucune commande pour le moment.</p>'}</div>`;
+    <div class="card"><h2>Dernières commandes</h2>${os.map(o => `<div class="item"><div><b>${esc(o.courses ? o.courses.title : '—')}</b><span class="dim small">${who(pm[o.user_id])} · ${day(o.created_at)}</span></div><span>${xof(o.amount_xof)}</span><span class="badge ${o.status}">${STAT[o.status]}</span></div>`).join('') || '<p class="dim">Aucune commande pour le moment.</p>'}</div>
+    <div class="card"><h2>Acheteurs par pays</h2>${bars(ch.countries)}</div>
+    <div class="card"><h2>Acheteurs et élèves ayant terminé</h2><p class="dim small">Terminé = toutes les leçons marquées terminées.</p>${ch.courses.map(c => `<div class="lg"><span>${esc(c.label)}</span><b>${c.done} terminé${c.done > 1 ? 's' : ''} / ${c.bought} acheteur${c.bought > 1 ? 's' : ''} (${Math.round(c.done * 100 / Math.max(1, c.bought))} %)</b></div><div class="bar"><i style="width:${Math.max(2, c.bought * 100 / Math.max(...ch.courses.map(x => x.bought)))}%"></i></div><div class="bar" style="margin-top:-6px"><i class="g" style="width:${c.done ? Math.max(2, c.done * 100 / Math.max(...ch.courses.map(x => x.bought))) : 0}%"></i></div>`).join('') || '<p class="dim">Pas encore de données.</p>'}<p class="dim small">Bleu : acheteurs · Vert : terminé</p></div>`;
 }
 
 /* ---------- formations ---------- */
@@ -229,14 +237,14 @@ function contentClick(e) {
 
 /* ---------- élèves ---------- */
 async function students() {
-  const [ps, es, cs] = await Promise.all([profiles(), ok(sb.from('enrollments').select('id, user_id, course_id')), ok(sb.from('courses').select('id, title').order('title'))]);
+  const [ps, es, cs, ws] = await Promise.all([profiles(), ok(sb.from('enrollments').select('id, user_id, course_id')), ok(sb.from('courses').select('id, title').order('title')), watch()]);
   const ct = Object.fromEntries(cs.map(c => [c.id, c.title]));
   app.innerHTML = `<h1>Élèves (${ps.length})</h1><input id="q" placeholder="Rechercher un nom, e-mail ou numéro…" style="margin-bottom:14px"><div id="list" class="card"></div>`;
   const draw = () => { const q = $('#q').value.toLowerCase().trim();
     const list = ps.filter(p => !q || [p.first_name, p.last_name, p.email, p.whatsapp].join(' ').toLowerCase().includes(q));
     $('#list').innerHTML = list.map(p => { const wa = (p.whatsapp || '').replace(/\D/g, '');
       return `<div class="item" data-u="${p.id}"><div><b>${who(p)}</b><span class="dim small">${esc(p.email)} · ${esc(p.country)} · inscrit le ${day(p.created_at)}</span>${wa ? ` <a class="small" style="color:var(--blue)" href="https://wa.me/${wa}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
-        <div>${es.filter(e => e.user_id === p.id).map(e => `<span class="chip">${esc(ct[e.course_id])}<button data-a="revoke" data-id="${e.id}" title="Retirer l’accès">✕</button></span>`).join('') || '<span class="dim small">Aucune formation</span>'}</div></div>
+        <div>${es.filter(e => e.user_id === p.id).map(e => { const w = ws[e.user_id + '|' + e.course_id] || {}; return `<span class="chip">${esc(ct[e.course_id])}<button data-a="revoke" data-id="${e.id}" title="Retirer l’accès">✕</button></span><span class="dim small">🎬 ${w.watched || 0}/${w.videos || 0} vidéos regardées · ✓ ${w.finished || 0}/${w.lessons || 0} terminées${w.last_at ? ' · vu le ' + day(w.last_at) : ''}</span>`; }).join('') || '<span class="dim small">Aucune formation</span>'}</div></div>
         <select style="max-width:200px">${cs.map(c => `<option value="${c.id}">${esc(c.title)}</option>`).join('')}</select><button class="o sm" data-a="grant">Donner l’accès</button></div>`; }).join('') || '<p class="dim">Aucun élève.</p>'; };
   $('#q').oninput = draw; draw();
   $('#list').onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; const row = b.closest('.item');
@@ -246,13 +254,13 @@ async function students() {
 
 /* ---------- commandes ---------- */
 async function orders() {
-  const [os, ps] = await Promise.all([ok(sb.from('orders').select('*, courses(title)').order('created_at', { ascending:false }).limit(200)), profiles()]);
+  const [os, ps, ws] = await Promise.all([ok(sb.from('orders').select('*, courses(title)').order('created_at', { ascending:false }).limit(200)), profiles(), watch()]);
   const pm = Object.fromEntries(ps.map(p => [p.id, p]));
   app.innerHTML = `<h1>Commandes</h1><p class="dim small">Rembourser ici ne renvoie pas l’argent : fais le remboursement dans ton tableau de bord Kkiapay, puis marque la commande ici.</p><div class="card" id="ol">
     ${os.map(o => `<div class="item" data-id="${o.id}" data-u="${o.user_id}" data-c="${o.course_id}"><div><b>${esc(o.courses ? o.courses.title : '—')}</b><span class="dim small">${who(pm[o.user_id])} · ${day(o.created_at)}${o.kkiapay_transaction_id ? ' · réf. ' + esc(o.kkiapay_transaction_id) : ''}</span></div><span>${xof(o.amount_xof)}</span><span class="badge ${o.status}">${STAT[o.status]}</span>
-      ${o.status === 'paid' ? '<button class="d sm" data-a="refund">Marquer remboursée</button>' : ''}${o.status === 'pending' ? '<button class="o sm" data-a="validate">Valider à la main</button>' : ''}</div>`).join('') || '<p class="dim">Aucune commande.</p>'}</div>`;
+      ${o.status === 'paid' ? (() => { const n = (ws[o.user_id + '|' + o.course_id] || {}).watched || 0, y = n < REFUND_MAX; return `<span class="ref ${y ? 'y' : 'n'}">${n} vidéo${n > 1 ? 's' : ''} regardée${n > 1 ? 's' : ''} · ${y ? 'remboursable' : 'non remboursable'}</span><button class="d sm" data-a="refund" data-n="${n}">Marquer remboursée</button>`; })() : ''}${o.status === 'pending' ? '<button class="o sm" data-a="validate">Valider à la main</button>' : ''}</div>`).join('') || '<p class="dim">Aucune commande.</p>'}</div>`;
   $('#ol').onclick = e => { const b = e.target.closest('button[data-a]'); if (!b) return; const r = b.closest('.item'), id = r.dataset.id;
-    if (b.dataset.a === 'refund') { if (!confirm('Marquer remboursée et retirer l’accès de l’élève ?')) return; act(async () => { await ok(sb.from('orders').update({ status:'refunded' }).eq('id', id)); await ok(sb.from('enrollments').delete().eq('user_id', r.dataset.u).eq('course_id', r.dataset.c)); await orders(); }, 'Fait ✓'); }
+    if (b.dataset.a === 'refund') { if (!confirm(+b.dataset.n >= REFUND_MAX ? 'Cet élève a regardé ' + b.dataset.n + ' vidéos : non remboursable selon la règle. Marquer remboursée quand même ?' : 'Marquer remboursée et retirer l’accès de l’élève ?')) return; act(async () => { await ok(sb.from('orders').update({ status:'refunded' }).eq('id', id)); await ok(sb.from('enrollments').delete().eq('user_id', r.dataset.u).eq('course_id', r.dataset.c)); await orders(); }, 'Fait ✓'); }
     if (b.dataset.a === 'validate') { if (!confirm('Vérifie d’abord le paiement dans Kkiapay. Valider et donner l’accès ?')) return; act(async () => { await ok(sb.from('orders').update({ status:'paid', paid_at:new Date().toISOString() }).eq('id', id)); await ok(sb.from('enrollments').upsert({ user_id:r.dataset.u, course_id:r.dataset.c, order_id:id }, { onConflict:'user_id,course_id' })); await orders(); }, 'Accès donné ✓'); } };
 }
 
@@ -264,7 +272,7 @@ async function settings() {
   const keys = ['support_email', 'whatsapp', 'facebook', 'instagram', 'tiktok', 'x', 'legal_cgu', 'legal_privacy', 'legal_cookies', 'legal_mentions'];
   app.innerHTML = `<h1>Réglages du site</h1><form id="sf" class="card"><h2>Contact et réseaux</h2>
     ${f('support_email', 'E-mail de support', 'contact@exemple.com')}${f('whatsapp', 'Numéro WhatsApp (avec indicatif pays)', '2290151762341')}${f('facebook', 'Lien Facebook', 'https://…')}${f('instagram', 'Lien Instagram (facultatif)', 'https://…')}${f('tiktok', 'Lien TikTok', 'https://…')}${f('x', 'Lien X (facultatif)', 'https://…')}
-    <h2 style="margin-top:22px">Règles et pages légales</h2><p class="dim small">Laisse un champ vide pour garder le texte par défaut du site. Pour un titre, écris <b>## Mon titre</b> ; sépare les paragraphes par une ligne vide.</p>
+    <h2 style="margin-top:22px">Règles et pages légales</h2><p class="dim small">Laisse un champ vide pour garder le texte par défaut du site. Pour un titre, écris <b>## Mon titre</b> ; pour une liste, commence chaque ligne par <b>- </b> ; <b>**gras**</b> met en gras.</p>
     ${t('legal_cgu', 'Conditions générales (CGU)')}${t('legal_privacy', 'Confidentialité')}${t('legal_cookies', 'Cookies')}${t('legal_mentions', 'Mentions légales')}
     <div class="actions"><button>Enregistrer</button></div></form>`;
   $('#sf').onsubmit = ev => { ev.preventDefault(); act(async () => {
