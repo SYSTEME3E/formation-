@@ -158,7 +158,10 @@ async function editor(id) {
 const fileRow = f => `<div class="item"><span>📎 ${esc(f.name)}</span><button class="d sm" data-a="delfile" data-id="${f.id}" data-p="${esc(f.file_path)}">Supprimer</button></div>`;
 const lessonCard = l => `<details class="les" data-id="${l.id}"><summary>${esc(l.title)} ${l.is_free_preview ? '<span class="badge">Aperçu gratuit</span>' : ''}</summary>
   <label>Titre<input class="t" value="${esc(l.title)}"></label>
-  <label>Lien de la vidéo (YouTube, Vimeo ou fichier)<input class="v" value="${esc(l.video_url)}" placeholder="https://…"></label>
+  ${l.video_url && l.video_url.startsWith('storage:')
+    ? `<div class="fup" style="margin-top:12px"><b>🎬 Vidéo envoyée</b> <span class="dim small">${esc(l.video_url.split('/').pop().replace(/^\d+-/, ''))}</span><input class="v" type="hidden" value="${esc(l.video_url)}"><div class="actions" style="margin-top:8px"><button class="d sm" data-a="delvideo">Retirer la vidéo</button></div></div>`
+    : `<label>Lien de la vidéo (YouTube ou Vimeo)<input class="v" value="${esc(l.video_url)}" placeholder="https://…"></label>
+       <div class="fup"><b>…ou envoie ta vidéo directement</b><input class="vf" type="file" accept="video/*"><button class="o sm" data-a="upvideo">Envoyer la vidéo</button></div>`}
   <div class="g2"><label>Durée (minutes)<input class="d" type="number" min="0" value="${l.duration_min ?? ''}"></label><label>Ordre<input class="p" type="number" value="${l.position}"></label></div>
   <label class="ck"><input class="fr" type="checkbox" ${l.is_free_preview ? 'checked' : ''}> Aperçu gratuit</label>
   <label>Texte de la leçon<textarea class="c" rows="5">${esc(l.content)}</textarea></label>
@@ -176,13 +179,24 @@ async function loadContent() {
 function contentClick(e) {
   const b = e.target.closest('button[data-a]'); if (!b) return;
   const a = b.dataset.a, mod = b.closest('.mod'), les = b.closest('.les'), cid = ctx.c.id;
-  if (a.startsWith('del') && !confirm('Supprimer ?')) return;
+  if (a.startsWith('del') && !confirm(a === 'delvideo' ? 'Retirer cette vidéo ?' : 'Supprimer ?')) return;
   act(async () => {
     if (a === 'addmod') await ok(sb.from('modules').insert({ course_id: cid, title: 'Nouveau module', position: ctx.mods.length + 1 }));
     if (a === 'savemod') await ok(sb.from('modules').update({ title: mod.querySelector('.mt').value.trim(), position: +mod.querySelector('.mp').value }).eq('id', mod.dataset.id));
     if (a === 'delmod') await ok(sb.from('modules').delete().eq('id', mod.dataset.id));
     if (a === 'addles') await ok(sb.from('lessons').insert({ module_id: b.dataset.m, course_id: cid, title: 'Nouvelle leçon', position: ctx.ls.filter(l => l.module_id === b.dataset.m).length + 1 }));
-    if (a === 'saveles') { const q = s => les.querySelector(s); await ok(sb.from('lessons').update({ title: q('.t').value.trim(), video_url: q('.v').value.trim() || null, duration_min: q('.d').value ? +q('.d').value : null, position: +q('.p').value, is_free_preview: q('.fr').checked, content: q('.c').value.trim() || null }).eq('id', les.dataset.id)); }
+    const lf = () => { const q = s => les.querySelector(s); return { title: q('.t').value.trim(), video_url: q('.v') ? (q('.v').value.trim() || null) : null, duration_min: q('.d').value ? +q('.d').value : null, position: +q('.p').value, is_free_preview: q('.fr').checked, content: q('.c').value.trim() || null }; };
+    if (a === 'saveles') await ok(sb.from('lessons').update(lf()).eq('id', les.dataset.id));
+    if (a === 'upvideo') {
+      const file = les.querySelector('.vf').files[0]; if (!file) throw new Error('Choisis d’abord une vidéo.');
+      if (!file.type.startsWith('video/')) throw new Error('Ce fichier n’est pas une vidéo.');
+      b.disabled = true; toast('Envoi de la vidéo en cours… ne ferme pas la page.');
+      const path = cid + '/videos/' + Date.now() + '-' + safe(file.name);
+      const up = await sb.storage.from('course-files').upload(path, file, { contentType: file.type });
+      if (up.error) { b.disabled = false; throw new Error(/size|exceed/i.test(up.error.message) ? 'Vidéo trop lourde pour ton offre Supabase. Réduis-la ou utilise un lien YouTube/Vimeo.' : up.error.message); }
+      await ok(sb.from('lessons').update({ ...lf(), video_url: 'storage:' + path }).eq('id', les.dataset.id));
+    }
+    if (a === 'delvideo') { const v = les.querySelector('.v').value; if (v.startsWith('storage:')) await sb.storage.from('course-files').remove([v.slice(8)]); await ok(sb.from('lessons').update({ ...lf(), video_url: null }).eq('id', les.dataset.id)); }
     if (a === 'delles') await ok(sb.from('lessons').delete().eq('id', les.dataset.id));
     if (a === 'upfile') {
       const file = b.parentElement.querySelector('input[type=file]').files[0]; if (!file) throw new Error('Choisis d’abord un fichier.');
