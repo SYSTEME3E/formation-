@@ -58,7 +58,7 @@
 <header id="bar" hidden><div class="wrap"><button id="burger" aria-label="Menu"><i></i><i></i><i></i></button><span class="brand">Admin</span></div></header>
 <div id="veil"></div>
 <aside id="side"><span class="brand">Admin · Formations</span>
-  <nav id="tabs"><a href="#/dash">Tableau de bord</a><a href="#/courses">Formations</a><a href="#/students">Élèves</a><a href="#/orders">Commandes</a><a href="#/promos">Promos</a></nav>
+  <nav id="tabs"><a href="#/dash">Tableau de bord</a><a href="#/courses">Formations</a><a href="#/students">Élèves</a><a href="#/orders">Commandes</a><a href="#/promos">Promos</a><a href="#/settings">Réglages</a></nav>
   <button class="o sm" id="out">Sortir</button></aside>
 <main class="wrap" id="app"><p class="dim">Chargement…</p></main>
 <div id="toast" hidden></div>
@@ -120,7 +120,7 @@ async function route() {
   const [, v, id] = (location.hash || '#/dash').split('/');
   document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#/' + (v === 'course' ? 'courses' : v)));
   scrollTo(0, 0); app.innerHTML = '<p class="dim">Chargement…</p>';
-  try { await ({ courses, course: () => editor(id), students, orders, promos }[v] || dash)(); }
+  try { await ({ courses, course: () => editor(id), students, orders, promos, settings }[v] || dash)(); }
   catch (e) { console.error(e); app.innerHTML = `<div class="card"><h2>Erreur</h2><p>${esc(e.message || '')}</p></div>`; }
 }
 const profiles = () => ok(sb.from('profiles').select('*').order('created_at', { ascending:false }));
@@ -150,7 +150,8 @@ async function editor(id) {
     <label>Adresse (laisse vide pour la créer automatiquement)<input id="slug" value="${esc(v.slug)}"></label>
     <label>Catégorie<select id="cat"><option value="">—</option>${cats.map(k => `<option value="${k.id}" ${k.id === v.category_id ? 'selected' : ''}>${esc(k.name)}</option>`).join('')}</select></label>
     <label>Résumé court<input id="short" value="${esc(v.short_description)}"></label>
-    <label>Description<textarea id="desc" rows="5">${esc(v.description)}</textarea></label>
+    <label>Description (« À propos de cette formation »)<textarea id="desc" rows="5">${esc(v.description)}</textarea></label>
+    <label>Ce que tu vas apprendre (un point par ligne)<textarea id="learn" rows="6" placeholder="Découper un appel de vente en 7 étapes&#10;Traiter les objections">${esc(v.learn_points)}</textarea></label>
     <div class="g2"><label>Niveau<select id="level">${[['debutant','Débutant'],['intermediaire','Intermédiaire'],['avance','Avancé']].map(l => `<option value="${l[0]}" ${l[0] === v.level ? 'selected' : ''}>${l[1]}</option>`).join('')}</select></label><label>Formateur<input id="inst" value="${esc(v.instructor)}"></label></div>
     <div class="g2"><label>Prix (XOF)<input id="price" type="number" min="0" required value="${v.price_xof ?? ''}"></label><label>Ancien prix barré (facultatif)<input id="old" type="number" min="0" value="${v.old_price_xof ?? ''}"></label></div>
     <label>Image de couverture${v.cover_url ? ` <a class="small" style="color:var(--blue)" href="${esc(v.cover_url)}" target="_blank" rel="noopener">(voir l’actuelle)</a>` : ''}<input id="cover" type="file" accept="image/*" style="border:0;padding:8px 0"></label>
@@ -158,7 +159,7 @@ async function editor(id) {
     <div class="actions"><button>Enregistrer</button>${isNew ? '' : '<button type="button" id="delc" class="d">Supprimer</button>'}</div></form>
   ${isNew ? '<p class="dim">Enregistre d’abord la formation pour ajouter les modules, leçons et fichiers.</p>' : '<div id="content"></div>'}`;
   $('#cf').onsubmit = ev => { ev.preventDefault(); act(async () => {
-    const f = { title: val('title'), slug: slugify(val('slug') || val('title')), category_id: val('cat') || null, short_description: val('short'), description: $('#desc').value.trim(),
+    const f = { title: val('title'), slug: slugify(val('slug') || val('title')), category_id: val('cat') || null, short_description: val('short'), description: $('#desc').value.trim(), learn_points: $('#learn').value.trim() || null,
       level: val('level'), instructor: val('inst'), price_xof: +val('price'), old_price_xof: val('old') ? +val('old') : null, is_published: $('#pub').checked };
     const file = $('#cover').files[0];
     if (file) { const path = Date.now() + '-' + safe(file.name); await ok(sb.storage.from('covers').upload(path, file)); f.cover_url = sb.storage.from('covers').getPublicUrl(path).data.publicUrl; }
@@ -174,6 +175,7 @@ async function editor(id) {
 const fileRow = f => `<div class="item"><span>📎 ${esc(f.name)}</span><button class="d sm" data-a="delfile" data-id="${f.id}" data-p="${esc(f.file_path)}">Supprimer</button></div>`;
 const lessonCard = l => `<details class="les" data-id="${l.id}"><summary>${esc(l.title)} ${l.is_free_preview ? '<span class="badge">Aperçu gratuit</span>' : ''}</summary>
   <label>Titre<input class="t" value="${esc(l.title)}"></label>
+  <label>Résumé court (affiché dans le programme)<input class="sy" value="${esc(l.summary)}"></label>
   ${l.video_url && l.video_url.startsWith('storage:')
     ? `<div class="fup" style="margin-top:12px"><b>🎬 Vidéo envoyée</b> <span class="dim small">${esc(l.video_url.split('/').pop().replace(/^\d+-/, ''))}</span><input class="v" type="hidden" value="${esc(l.video_url)}"><div class="actions" style="margin-top:8px"><button class="d sm" data-a="delvideo">Retirer la vidéo</button></div></div>`
     : `<label>Lien de la vidéo (YouTube ou Vimeo)<input class="v" value="${esc(l.video_url)}" placeholder="https://…"></label>
@@ -188,6 +190,7 @@ async function loadContent() {
   const [mods, ls, fs] = await Promise.all([ok(sb.from('modules').select('*').eq('course_id', cid).order('position')), ok(sb.from('lessons').select('*').eq('course_id', cid).order('position')), ok(sb.from('lesson_files').select('*').eq('course_id', cid).order('created_at'))]);
   Object.assign(ctx, { mods, ls, fs });
   $('#content').innerHTML = `<div class="card"><h2>Modules et leçons</h2>${mods.map(m => `<div class="mod" data-id="${m.id}"><div class="row2"><input class="mt" value="${esc(m.title)}"><input class="mp" type="number" value="${m.position}" title="Ordre"><button class="o sm" data-a="savemod">OK</button><button class="d sm" data-a="delmod">✕</button></div>
+      <input class="md" value="${esc(m.description)}" placeholder="Description du module (affichée dans le programme)" style="margin:8px 0">
       ${ls.filter(l => l.module_id === m.id).map(lessonCard).join('')}<button class="o sm" data-a="addles" data-m="${m.id}">+ Leçon</button></div>`).join('')}<button data-a="addmod">+ Module</button></div>
     <div class="card"><h2>Ressources de la formation</h2><p class="dim small">Fichiers visibles pour toute la formation (PDF, modèles…).</p><div class="fup">${fs.filter(f => !f.lesson_id).map(fileRow).join('')}<input type="file"><button class="o sm" data-a="upfile" data-l="">Envoyer le fichier</button></div></div>`;
   open.forEach(i => { const d = document.querySelector(`.les[data-id="${i}"]`); if (d) d.open = true; });
@@ -198,10 +201,10 @@ function contentClick(e) {
   if (a.startsWith('del') && !confirm(a === 'delvideo' ? 'Retirer cette vidéo ?' : 'Supprimer ?')) return;
   act(async () => {
     if (a === 'addmod') await ok(sb.from('modules').insert({ course_id: cid, title: 'Nouveau module', position: ctx.mods.length + 1 }));
-    if (a === 'savemod') await ok(sb.from('modules').update({ title: mod.querySelector('.mt').value.trim(), position: +mod.querySelector('.mp').value }).eq('id', mod.dataset.id));
+    if (a === 'savemod') await ok(sb.from('modules').update({ title: mod.querySelector('.mt').value.trim(), position: +mod.querySelector('.mp').value, description: mod.querySelector('.md').value.trim() || null }).eq('id', mod.dataset.id));
     if (a === 'delmod') await ok(sb.from('modules').delete().eq('id', mod.dataset.id));
     if (a === 'addles') await ok(sb.from('lessons').insert({ module_id: b.dataset.m, course_id: cid, title: 'Nouvelle leçon', position: ctx.ls.filter(l => l.module_id === b.dataset.m).length + 1 }));
-    const lf = () => { const q = s => les.querySelector(s); return { title: q('.t').value.trim(), video_url: q('.v') ? (q('.v').value.trim() || null) : null, duration_min: q('.d').value ? +q('.d').value : null, position: +q('.p').value, is_free_preview: q('.fr').checked, content: q('.c').value.trim() || null }; };
+    const lf = () => { const q = s => les.querySelector(s); return { title: q('.t').value.trim(), summary: q('.sy').value.trim() || null, video_url: q('.v') ? (q('.v').value.trim() || null) : null, duration_min: q('.d').value ? +q('.d').value : null, position: +q('.p').value, is_free_preview: q('.fr').checked, content: q('.c').value.trim() || null }; };
     if (a === 'saveles') await ok(sb.from('lessons').update(lf()).eq('id', les.dataset.id));
     if (a === 'upvideo') {
       const file = les.querySelector('.vf').files[0]; if (!file) throw new Error('Choisis d’abord une vidéo.');
@@ -254,6 +257,20 @@ async function orders() {
 }
 
 /* ---------- codes promo ---------- */
+async function settings() {
+  const S = Object.fromEntries((await ok(sb.from('site_settings').select('*'))).map(r => [r.key, r.value]));
+  const f = (k, l, ph) => `<label>${l}<input id="s-${k}" value="${esc(S[k])}" placeholder="${ph || ''}"></label>`;
+  const t = (k, l) => `<label>${l}<textarea id="s-${k}" rows="8">${esc(S[k])}</textarea></label>`;
+  const keys = ['support_email', 'whatsapp', 'facebook', 'instagram', 'tiktok', 'x', 'legal_cgu', 'legal_privacy', 'legal_cookies', 'legal_mentions'];
+  app.innerHTML = `<h1>Réglages du site</h1><form id="sf" class="card"><h2>Contact et réseaux</h2>
+    ${f('support_email', 'E-mail de support', 'contact@exemple.com')}${f('whatsapp', 'Numéro WhatsApp (avec indicatif pays)', '2290151762341')}${f('facebook', 'Lien Facebook', 'https://…')}${f('instagram', 'Lien Instagram (facultatif)', 'https://…')}${f('tiktok', 'Lien TikTok', 'https://…')}${f('x', 'Lien X (facultatif)', 'https://…')}
+    <h2 style="margin-top:22px">Règles et pages légales</h2><p class="dim small">Laisse un champ vide pour garder le texte par défaut du site. Pour un titre, écris <b>## Mon titre</b> ; sépare les paragraphes par une ligne vide.</p>
+    ${t('legal_cgu', 'Conditions générales (CGU)')}${t('legal_privacy', 'Confidentialité')}${t('legal_cookies', 'Cookies')}${t('legal_mentions', 'Mentions légales')}
+    <div class="actions"><button>Enregistrer</button></div></form>`;
+  $('#sf').onsubmit = ev => { ev.preventDefault(); act(async () => {
+    await ok(sb.from('site_settings').upsert(keys.map(k => ({ key: k, value: k === 'whatsapp' ? $('#s-' + k).value.replace(/\D/g, '') : $('#s-' + k).value.trim() })), { onConflict: 'key' }));
+  }, 'Enregistré ✓'); };
+}
 async function promos() {
   const ps = await ok(sb.from('promo_codes').select('*').order('code'));
   app.innerHTML = `<h1>Codes promo</h1><form id="pf" class="card"><h2>Nouveau code</h2><div class="g2"><label>Code<input id="code" required placeholder="BIENVENUE"></label><label>Réduction (%)<input id="pct" type="number" min="1" max="100" required></label></div>
