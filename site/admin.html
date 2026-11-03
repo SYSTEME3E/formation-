@@ -55,7 +55,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-const CFG = { url: '', key: '' };   // les mêmes que sur le site : URL Supabase + clé "anon"
+const CFG = { url: 'https://kemrxapzrvquavahhxeb.supabase.co', key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlbXJ4YXB6cnZxdWF2YWhoeGViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTI5MjYsImV4cCI6MjEwOTIyODkyNn0.xG2BexZI9UIr1NxGPs9R6CX9euPLfyJ0ztcH2WB7dYQ' };   // les mêmes que sur le site : URL Supabase + clé "anon"
 
 const $ = s => document.querySelector(s), app = $('#app');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
