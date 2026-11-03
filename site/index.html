@@ -129,6 +129,14 @@
     #bnav a, #bnav button { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:0; font:700 .72rem Manrope, sans-serif; color:var(--dim); padding:4px 0; cursor:pointer; }
     #bnav .on { color:var(--blue); } #bnav svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
   }
+  /* avis, garantie, règles */
+  .stars{display:inline-flex;gap:2px;font-style:normal} .stars i{font-style:normal;color:#d3d9e6} .stars i.on{color:#22c55e}
+  .rsum{display:flex;align-items:center;gap:10px;margin:8px 0 4px;flex-wrap:wrap} .rsum b{font:800 1.6rem 'Bricolage Grotesque',sans-serif}
+  .rv{padding:14px 0;border-bottom:1px solid var(--line)} .rv:last-child{border:0} .rv .who{display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:700} .rv p{margin:6px 0 0;white-space:pre-line}
+  .rform{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)} .rform textarea{width:100%;font:400 1rem Manrope,sans-serif;padding:13px 16px;border:2px solid var(--line);border-radius:14px;margin:6px 0 12px}
+  .pick{display:flex;gap:4px;margin:6px 0} .pick button{background:none;border:0;padding:2px 4px;font-size:2.2rem;line-height:1;color:#d3d9e6;cursor:pointer} .pick button.on{color:#22c55e}
+  .guar{text-align:center;padding:0 20px 64px} .guar img{max-width:300px;width:100%;height:auto} .guar p{max-width:520px;margin:10px auto 0;color:var(--dim);font-size:.92rem}
+  .lgl ul{margin:0 0 10px;padding-left:22px} .lgl li{margin:0 0 6px}
 </style>
 </head>
 <body>
@@ -279,10 +287,41 @@ async function detail(slug) {
     <aside class="buy"><div class="hd"><small>ACCÈS À LA FORMATION</small><b>${xof(c.price_xof)}</b>${c.old_price_xof > c.price_xof ? `<s>${xof(c.old_price_xof)}</s> <span class="off">-${pct}%</span>` : ''}</div>
       <div class="bd">${owned ? `<a class="btn b" href="#/cours/${encodeURIComponent(c.slug)}">Continuer la formation</a>` : `<a class="btn b" href="#/paiement/${encodeURIComponent(c.slug)}">Démarrer maintenant</a>`}
       <a class="btn o" href="${LINKS.wa}" target="_blank" rel="noopener">Poser une question sur WhatsApp</a>
-      <ul class="ok"><li>${s.n} leçons</li><li>${dur(s.min)} de contenu</li><li>Fichiers à télécharger</li><li>Accès immédiat après le paiement</li></ul></div></aside>
+      <ul class="ok"><li>${s.n} leçons</li><li>${dur(s.min)} de contenu</li><li>Fichiers à télécharger</li><li>Accès immédiat après le paiement</li><li>Satisfait ou remboursé</li></ul></div></aside>
     ${learn.length ? `<div class="box"><h2>Ce que tu vas apprendre</h2><ul class="learn">${learn.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
     ${c.description ? `<div class="box"><h2>À propos de cette formation</h2><p style="margin:10px 0 0;white-space:pre-line">${esc(c.description)}</p></div>` : ''}
-    <div class="box"><h2>Programme de la formation</h2><p class="dim" style="font-size:.85rem;margin:4px 0 0">${modules.length} module${modules.length > 1 ? 's' : ''} · ${s.n} leçon${s.n > 1 ? 's' : ''}</p>${mods}</div></div>`;
+    <div class="box"><h2>Programme de la formation</h2><p class="dim" style="font-size:.85rem;margin:4px 0 0">${modules.length} module${modules.length > 1 ? 's' : ''} · ${s.n} leçon${s.n > 1 ? 's' : ''}</p>${mods}</div>
+    <div class="box" id="rv"></div></div>`;
+  reviews(c, owned);
+}
+const stars = n => `<span class="stars" aria-label="${n} sur 5">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= Math.round(n) ? 'on' : ''}">★</i>`).join('')}</span>`;
+async function reviews(c, owned, thanks) {
+  const box = $('#rv'); if (!box) return;
+  let list = [], mine = null;
+  if (demo) list = [{ author_name: 'Koffi A.', rating: 5, comment: 'Formation très claire, je recommande.', created_at: new Date().toISOString() }];
+  else {
+    const r = await sb.from('public_reviews').select('author_name, rating, comment, created_at').eq('course_id', c.id).order('created_at', { ascending: false }).limit(50);
+    list = r.data || [];
+    if (owned) mine = (await sb.from('reviews').select('rating, comment').eq('course_id', c.id).eq('user_id', session.user.id).maybeSingle()).data;
+  }
+  const avg = list.length ? list.reduce((t, x) => t + x.rating, 0) / list.length : 0;
+  let pick = mine ? mine.rating : 0;
+  const form = owned ? `<form id="rf" class="rform"><b>${mine ? 'Modifier mon avis' : 'Donne ton avis'}</b><div class="pick">${[1, 2, 3, 4, 5].map(i => `<button type="button" data-s="${i}" aria-label="${i} étoile${i > 1 ? 's' : ''}">★</button>`).join('')}</div>
+    <textarea id="rc" maxlength="600" rows="3" placeholder="Raconte ton expérience (facultatif)">${esc(mine && mine.comment)}</textarea><div id="rm" class="msg ${thanks ? 'good' : ''}" ${thanks ? '' : 'hidden'}>${esc(thanks)}</div><button class="btn b" style="width:100%">Publier mon avis</button></form>`
+    : `<p class="dim small" style="margin-top:14px">${session ? 'Seuls les élèves de cette formation peuvent donner leur avis.' : 'Connecte-toi avec ton compte élève pour donner ton avis. <a class="lk" href="#/connexion">Se connecter</a>'}</p>`;
+  box.innerHTML = `<h2>Avis des élèves</h2>${list.length ? `<div class="rsum"><b>${avg.toFixed(1).replace('.', ',')}</b>${stars(avg)}<span class="dim">${list.length} avis</span></div>` : '<p class="dim">Pas encore d’avis.</p>'}
+    ${list.map(x => `<div class="rv"><div class="who"><span>${esc(x.author_name)}</span>${stars(x.rating)}</div><p>${esc(x.comment)}</p></div>`).join('')}${form}`;
+  const f = $('#rf'); if (!f) return;
+  const paint = () => f.querySelectorAll('.pick button').forEach(b => b.classList.toggle('on', +b.dataset.s <= pick));
+  paint(); f.querySelector('.pick').onclick = e => { const b = e.target.closest('button'); if (b) { pick = +b.dataset.s; paint(); } };
+  f.onsubmit = async ev => {
+    ev.preventDefault(); const m = $('#rm'); m.className = 'msg bad';
+    if (!pick) { m.textContent = 'Choisis une note de 1 à 5 étoiles.'; m.hidden = false; return; }
+    if (demo) { m.textContent = 'Mode démo : avis non enregistré.'; m.hidden = false; return; }
+    const r = await sb.from('reviews').upsert({ course_id: c.id, user_id: session.user.id, rating: pick, comment: $('#rc').value.trim() || null }, { onConflict: 'course_id,user_id' });
+    if (r.error) { m.textContent = 'Enregistrement impossible. Réessaie.'; m.hidden = false; return; }
+    reviews(c, owned, 'Merci pour ton avis ✓');
+  };
 }
 function soon() { app.innerHTML = '<div class="center"><h2>Bientôt disponible</h2><p class="dim">L’espace de cours arrive à la prochaine étape.</p><a class="btn y" href="#/">Retour aux formations</a></div>'; }
 
@@ -325,10 +364,12 @@ async function checkout(slug) {
     <h2 class="mt">Moyen de paiement</h2><p class="dim">Mobile Money ou carte bancaire, dans une fenêtre sécurisée Kkiapay.</p>
     <div id="msg" class="msg" hidden></div>
     <button id="pay" class="btn l" type="submit">🔒 Payer ${xof(c.price_xof)}</button>
-    <p class="dim small" style="margin-top:12px">Accès immédiat après le paiement, depuis ta page « Mes formations ».</p></form>
+    <p class="dim small" style="margin-top:12px">Accès immédiat après le paiement, depuis ta page « Mes formations ».</p>
+    <p class="small" style="margin-top:8px;color:#0a8f5a;font-weight:700">✓ Satisfait ou remboursé : remboursement possible si tu as regardé moins de 2 vidéos.</p></form>
     <aside class="buy"><div class="hd"><small>TA COMMANDE</small><b style="font-size:1.35rem">${esc(c.title)}</b><b>${xof(c.price_xof)}</b></div>
     <div class="bd">${old ? `<div class="sum"><span>Prix habituel</span><s>${xof(c.old_price_xof)}</s></div><div class="sum"><span>Réduction</span><span style="color:#0a8f5a">-${xof(c.old_price_xof - c.price_xof)}</span></div>` : ''}
-    <div class="sum" style="border:0"><b>Total</b><b>${xof(c.price_xof)}</b></div></div></aside></div>`;
+    <div class="sum" style="border:0"><b>Total</b><b>${xof(c.price_xof)}</b></div></div></aside></div>
+    <div class="guar"><img src="garantie.jpg" width="585" height="360" alt="Satisfait ou remboursé" loading="lazy"><p><b>Satisfait ou remboursé :</b> si tu as regardé moins de 2 vidéos, tu peux demander le remboursement. À partir de 2 vidéos regardées, la vente est définitive.</p></div>`;
   $('#f').onsubmit = async ev => {
     ev.preventDefault(); const b = $('#pay'); b.disabled = true; msg('');
     try {
@@ -494,8 +535,13 @@ async function space(slug, lid) {
         return `<details${it.includes(cur) ? ' open' : ''}><summary><span>${esc(m.title)}</span><small>${it.length}</small></summary>${it.map(l => `<a class="lrow${l === cur ? ' on' : ''}" href="#" data-id="${l.id}"><span class="dot${done.has(l.id) ? ' ok' : ''}">${done.has(l.id) ? '✓' : ''}</span><span>${esc(l.title)}</span><i>${dur(l.duration_min)}</i></a>`).join('')}</details>`; }).join('')}</aside>
       </div></div>`;
     app.querySelectorAll('.lrow').forEach(a => a.onclick = ev => { ev.preventDefault(); cur = ls.find(l => l.id === a.dataset.id); history.replaceState(null, '', url()); draw(); scrollTo(0, 0); });
+    const lidT = cur.id, trk = () => sb.rpc('track_view', { p_lesson: lidT }).then(() => {});
+    const bindTrack = () => { if (demo) return; const v = app.querySelector('.vid video');
+      if (v) v.addEventListener('play', trk, { once: true });
+      else if (app.querySelector('.vid iframe')) setTimeout(() => { if (cur.id === lidT && app.querySelector('.vid iframe')) trk(); }, 8000); };
+    bindTrack();
     const vs = $('#vslot');
-    if (vs) { const lid2 = cur.id; sb.storage.from('course-files').createSignedUrl(cur.video_url.slice(8), 21600).then(r => { if (!$('#vslot') || cur.id !== lid2) return; if (r.error) { vs.textContent = 'Vidéo indisponible. Réessaie.'; return; } vs.innerHTML = `<video controls controlslist="nodownload" playsinline preload="metadata" src="${esc(r.data.signedUrl)}"></video>`; }); }
+    if (vs) { const lid2 = cur.id; sb.storage.from('course-files').createSignedUrl(cur.video_url.slice(8), 10800).then(r => { if (!$('#vslot') || cur.id !== lid2) return; if (r.error) { vs.textContent = 'Vidéo indisponible. Réessaie.'; return; } vs.innerHTML = `<video controls controlslist="nodownload" playsinline preload="metadata" src="${esc(r.data.signedUrl)}"></video>`; bindTrack(); }); }
     $('#done').onclick = async () => { if (!(await mark(true))) return; if (next) cur = next; history.replaceState(null, '', url()); draw(); scrollTo(0, 0); };
     const u = $('#undo'); if (u) u.onclick = async () => { if (await mark(false)) draw(); };
     app.querySelectorAll('.dl').forEach(b => b.onclick = async () => {
@@ -513,7 +559,7 @@ async function loadSettings() {
   if (demo) return;
   try { const r = await sb.from('site_settings').select('key, value'); (r.data || []).forEach(x => SET[x.key] = x.value); } catch (_) {}
   const w = (SET.whatsapp || '').replace(/\D/g, ''); if (w) LINKS.wa = 'https://wa.me/' + w;
-  ['facebook:fb', 'tiktok:tt', 'instagram:ig', 'x:x'].forEach(k => { const [a, b] = k.split(':'); if (SET[a] !== undefined) LINKS[b] = SET[a]; });
+  ['facebook:fb', 'tiktok:tt', 'instagram:ig', 'x:x'].forEach(k => { const [a, b] = k.split(':'); if (SET[a] !== undefined) LINKS[b] = /^https?:\/\//i.test(SET[a]) ? SET[a] : ''; });
   LINKS.mail = SET.support_email || '';
 }
 function applyLinks() {
@@ -529,16 +575,28 @@ const LEGAL = {
 Ces conditions encadrent l’utilisation du site d’Eric Kpakpo et l’achat de ses formations en ligne.
 
 ## 2. Compte et accès
-Ton compte est personnel. Tu t’engages à ne pas partager tes identifiants ni l’accès aux cours avec d’autres personnes. L’accès à une formation est ouvert dès que le paiement est confirmé et reste disponible depuis ton espace « Mes cours ».
+- Ton compte est personnel : ne partage ni ton mot de passe, ni l’accès aux cours.
+- L’accès à une formation est ouvert dès que le paiement est confirmé.
+- Tu retrouves tes formations dans « Mes cours ».
 
 ## 3. Prix et paiement
-Les prix sont affichés en francs CFA (XOF). Le paiement se fait par Mobile Money ou carte bancaire via Kkiapay. Une commande est validée uniquement après confirmation du paiement.
+- Les prix sont affichés en francs CFA (XOF).
+- Le paiement se fait par Mobile Money ou carte bancaire, via Kkiapay.
+- Une commande est validée uniquement après la confirmation du paiement.
 
-## 4. Contenus et propriété intellectuelle
-Les vidéos, textes et fichiers sont protégés. Il est interdit de les copier, revendre, publier ou diffuser sans autorisation écrite.
+## 4. Satisfait ou remboursé
+Tu peux demander le remboursement de ta formation, à une condition : avoir regardé moins de 2 vidéos.
+- 0 ou 1 vidéo regardée : tu es remboursé(e).
+- 2 vidéos regardées ou plus : la vente est définitive, aucun remboursement n’est possible.
+- Les vidéos regardées sont comptées automatiquement par la plateforme, même si tu ne cliques pas sur « Terminer ».
+- Pour demander un remboursement : écris-nous sur WhatsApp, en indiquant le nom et l’e-mail de ton compte.
+- Une fois le remboursement accepté, ton accès à la formation est retiré.
 
-## 5. Remboursement
-Les formations étant accessibles immédiatement après le paiement, les ventes sont en principe définitives. Si tu as été débité sans accès, ou si un contenu est inaccessible, contacte-nous : nous corrigerons le problème ou étudierons un remboursement.
+## 5. Contenus et propriété intellectuelle
+Les vidéos, textes et fichiers sont protégés. Il est interdit de :
+- copier, enregistrer ou revendre les contenus ;
+- les publier ou les diffuser sans autorisation écrite ;
+- donner l’accès à une autre personne.
 
 ## 6. Résultats
 Les formations donnent des méthodes et des conseils. Les résultats dépendent de ton travail et de ta situation : aucun gain n’est garanti.
@@ -549,19 +607,29 @@ Tout comportement abusif, toute fraude ou tout partage du contenu peut entraîne
 ## 8. Droit applicable
 Ces conditions sont soumises au droit applicable en République du Bénin.`],
   confidentialite: ['Politique de confidentialité', `## Données collectées
-Lors de la création de ton compte et de ton achat, nous collectons : prénom, nom, e-mail, pays, numéro WhatsApp, commandes et progression dans les cours.
+Lors de la création de ton compte et de ton achat, nous collectons :
+- ton prénom et ton nom ;
+- ton e-mail, ton pays et ton numéro WhatsApp ;
+- tes commandes, tes avis et ta progression dans les cours (vidéos regardées comprises).
 
 ## Utilisation
-Ces données servent à créer ton compte, te donner accès aux formations, traiter ton paiement, te contacter pour le support et suivre ta progression. Nous ne vendons pas tes données.
+Ces données servent à :
+- créer ton compte et te donner accès aux formations ;
+- traiter ton paiement et appliquer la garantie « Satisfait ou remboursé » ;
+- te contacter pour le support.
+Nous ne vendons pas tes données.
+
+## Avis
+Si tu publies un avis, ton prénom et l’initiale de ton nom sont affichés avec ta note.
 
 ## Paiement
 Le paiement est traité par Kkiapay. Nous ne voyons ni ne stockons tes numéros de carte ou de Mobile Money.
 
-## Hébergement
-Le site est hébergé par Vercel et les données sont stockées chez Supabase.
+## Sécurité
+Tes données sont stockées sur des serveurs sécurisés, avec un accès limité aux personnes autorisées.
 
 ## Tes droits
-Tu peux modifier tes informations et ton mot de passe dans « Mes informations ». Pour consulter ou supprimer tes données, contacte-nous via le support.`],
+Tu peux modifier tes informations et ton mot de passe dans « Mes informations ». Pour consulter ou supprimer tes données : contacte-nous via le support.`],
   cookies: ['Cookies', `## Ce que nous utilisons
 Le site utilise uniquement le stockage nécessaire à son fonctionnement, par exemple pour garder ta session de connexion ouverte. Nous n’utilisons pas de cookies publicitaires.
 
@@ -576,20 +644,30 @@ Eric Kpakpo, Cotonou, Bénin.
 ## Contact
 Via le support WhatsApp ou l’e-mail indiqués en bas de page.
 
-## Hébergement
-Site : Vercel Inc. Données : Supabase.
-
 ## Paiements
-Kkiapay.`]
+Les paiements sont traités par Kkiapay.`]
 };
+const fr = t => t.replace(/ ([:;?!»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+const inl = t => esc(fr(t)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
 async function legal(k) {
   const d = LEGAL[k]; if (!d) { location.hash = '#/'; return; }
   const text = SET['legal_' + (k === 'confidentialite' ? 'privacy' : k)] || d[1];
   document.title = d[0] + ' · Eric Kpakpo';
-  app.innerHTML = `<div class="wrap narrow pad" style="max-width:760px"><div class="box"><h1 class="h1s">${esc(d[0])}</h1>${text.split(/\n\s*\n/).map(b => b.startsWith('## ') ? `<h3 style="margin:18px 0 6px">${esc(b.slice(3))}</h3>` : `<p style="margin:0 0 6px;white-space:pre-line">${esc(b)}</p>`).join('')}</div></div>`;
+  let body = '', inList = false;
+  text.split('\n').forEach(l => {
+    const t = l.trim(), b = /^[-•] /.test(t);
+    if (inList && !b) { body += '</ul>'; inList = false; }
+    if (!t) return;
+    if (t.startsWith('## ')) body += `<h3 style="margin:20px 0 8px">${inl(t.slice(3))}</h3>`;
+    else if (b) { if (!inList) { body += '<ul>'; inList = true; } body += `<li>${inl(t.slice(2))}</li>`; }
+    else body += `<p style="margin:0 0 8px">${inl(t)}</p>`;
+  });
+  if (inList) body += '</ul>';
+  app.innerHTML = `<div class="wrap narrow pad lgl" style="max-width:760px"><div class="box"><h1 class="h1s">${inl(d[0])}</h1>${body}</div></div>`;
 }
 async function route() {
-  const m = (location.hash.slice(1) || '/').split('/'), R = m[1], arg = decodeURIComponent(m[2] || '');
+  const dec = x => { try { return decodeURIComponent(x || ''); } catch (_) { return ''; } };
+  const m = (location.hash.slice(1) || '/').split('/'), R = m[1], arg = dec(m[2]);
   const light = ['formation', 'paiement', 'connexion', 'succes', 'mes-formations', 'cours', 'compte', 'legal'].includes(R);
   document.body.classList.toggle('light', light);
   if (!light) document.title = 'Formations · Eric Kpakpo';
@@ -604,7 +682,7 @@ async function route() {
     else if (R === 'mes-formations') await mine();
     else if (R === 'compte') await account();
     else if (R === 'legal') await legal(arg);
-    else if (R === 'cours') await space(arg, decodeURIComponent(m[3] || ''));
+    else if (R === 'cours') await space(arg, dec(m[3]));
     else await home();
   } catch (e) { console.error(e); app.innerHTML = '<div class="center"><p>Une erreur est survenue. Réessaie dans un instant.</p></div>'; }
 }
