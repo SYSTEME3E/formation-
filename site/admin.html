@@ -64,6 +64,7 @@
 <div id="toast" hidden></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.1.0/dist/tus.min.js"></script>
 <script>
 const CFG = { url: 'https://kemrxapzrvquavahhxeb.supabase.co', key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlbXJ4YXB6cnZxdWF2YWhoeGViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTI5MjYsImV4cCI6MjEwOTIyODkyNn0.xG2BexZI9UIr1NxGPs9R6CX9euPLfyJ0ztcH2WB7dYQ' };   // les mêmes que sur le site : URL Supabase + clé "anon"
 
@@ -79,6 +80,21 @@ let tt; const toast = (t, bad) => { const el = $('#toast'); el.textContent = t; 
 const act = async (f, msg) => { try { await f(); if (msg) toast(msg); } catch (e) { console.error(e); toast(e.message || 'Erreur', true); } };
 const STAT = { pending:'En attente', paid:'Payée', failed:'Échouée', refunded:'Remboursée' };
 const sb = (CFG.url && CFG.key) ? supabase.createClient(CFG.url, CFG.key) : null;
+/* envoi de fichiers : petits fichiers en direct, gros fichiers (vidéos) par morceaux, plus fiable sur téléphone */
+async function put(path, file) {
+  if (file.size <= 5 * 1024 * 1024) { const r = await sb.storage.from('course-files').upload(path, file, { contentType: file.type || undefined }); if (r.error) throw r.error; return; }
+  const ses = (await sb.auth.getSession()).data.session; if (!ses) throw new Error('Session expirée. Reconnecte-toi.');
+  await new Promise((res, rej) => new tus.Upload(file, {
+    endpoint: CFG.url + '/storage/v1/upload/resumable',
+    retryDelays: [0, 3000, 5000, 10000, 20000],
+    headers: { authorization: 'Bearer ' + ses.access_token, apikey: CFG.key },
+    uploadDataDuringCreation: true, removeFingerprintOnSuccess: true, chunkSize: 6 * 1024 * 1024,
+    metadata: { bucketName: 'course-files', objectName: path, contentType: file.type || 'application/octet-stream', cacheControl: '3600' },
+    onProgress: (a, b) => toast('Envoi en cours : ' + Math.round(a * 100 / b) + ' %'),
+    onError: e => rej(new Error(/413|maximum|exceed|size/i.test(String(e)) ? 'Fichier trop lourd pour ton offre Supabase (limite d’environ 50 Mo). Compresse la vidéo ou utilise un lien YouTube/Vimeo.' : 'Envoi interrompu. Vérifie ta connexion et réessaie.')),
+    onSuccess: res
+  }).start());
+}
 let ctx = null;
 
 /* ---------- connexion ---------- */
@@ -192,8 +208,7 @@ function contentClick(e) {
       if (!file.type.startsWith('video/')) throw new Error('Ce fichier n’est pas une vidéo.');
       b.disabled = true; toast('Envoi de la vidéo en cours… ne ferme pas la page.');
       const path = cid + '/videos/' + Date.now() + '-' + safe(file.name);
-      const up = await sb.storage.from('course-files').upload(path, file, { contentType: file.type });
-      if (up.error) { b.disabled = false; throw new Error(/size|exceed/i.test(up.error.message) ? 'Vidéo trop lourde pour ton offre Supabase. Réduis-la ou utilise un lien YouTube/Vimeo.' : up.error.message); }
+      try { await put(path, file); } catch (e) { b.disabled = false; throw e; }
       await ok(sb.from('lessons').update({ ...lf(), video_url: 'storage:' + path }).eq('id', les.dataset.id));
     }
     if (a === 'delvideo') { const v = les.querySelector('.v').value; if (v.startsWith('storage:')) await sb.storage.from('course-files').remove([v.slice(8)]); await ok(sb.from('lessons').update({ ...lf(), video_url: null }).eq('id', les.dataset.id)); }
@@ -201,7 +216,7 @@ function contentClick(e) {
     if (a === 'upfile') {
       const file = b.parentElement.querySelector('input[type=file]').files[0]; if (!file) throw new Error('Choisis d’abord un fichier.');
       const path = cid + '/' + Date.now() + '-' + safe(file.name);
-      await ok(sb.storage.from('course-files').upload(path, file));
+      b.disabled = true; try { await put(path, file); } catch (e) { b.disabled = false; throw e; }
       await ok(sb.from('lesson_files').insert({ lesson_id: b.dataset.l || null, course_id: cid, name: file.name, file_path: path }));
     }
     if (a === 'delfile') { await sb.storage.from('course-files').remove([b.dataset.p]); await ok(sb.from('lesson_files').delete().eq('id', b.dataset.id)); }
