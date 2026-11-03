@@ -28,7 +28,7 @@
   h1 { font-size:clamp(2.2rem, 8vw, 3.6rem); } h1 span { color:var(--blue); }
   .lead { color:var(--dim); max-width:540px; margin:14px 0 0; }
   h2 { font-size:clamp(1.6rem, 5vw, 2.2rem); } h2::after { content:""; display:block; width:56px; height:5px; background:var(--yellow); margin-top:10px; border-radius:3px; }
-  .pad { padding:44px 0 64px; }
+  .pad { padding-top:44px; padding-bottom:64px; }
   .chips { display:flex; gap:8px; overflow-x:auto; padding:18px 0; }
   .chips button { flex:none; font:600 .9rem Manrope, sans-serif; color:var(--ink); background:var(--card); border:1px solid var(--line); padding:8px 16px; border-radius:20px; cursor:pointer; }
   .chips button.on { background:var(--yellow); color:#050608; border-color:var(--yellow); }
@@ -80,12 +80,12 @@
   .btn.b, .btn.l { border:0; } .btn.l { background:var(--lime); color:#0b1330; box-shadow:0 4px 0 #8fb21a; width:100%; }
   .btn:disabled { opacity:.6; cursor:wait; } .sm { padding:8px 16px; font-size:.9rem; }
   .row { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
-  .co { display:grid; gap:16px; padding:30px 0 64px; } .sum { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); }
+  .co { display:grid; gap:16px; padding-top:30px; padding-bottom:64px; } .sum { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line); }
   @media (min-width:900px) { .co { grid-template-columns:1fr 360px; } .co .buy { grid-column:2; grid-row:1; } }
   body.light .cat { color:var(--blue); }
   .vid { aspect-ratio:16/9; background:#0b1330; border-radius:16px; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#8fa0c8; }
   .vid iframe, .vid video { width:100%; height:100%; border:0; background:#000; }
-  .prog { margin:14px 0 18px; } .bar { height:8px; background:#dfe5f1; border-radius:4px; } .bar i { display:block; height:100%; background:var(--blue); border-radius:4px; }
+  .prog { margin:16px 0 6px; } .bar { height:8px; background:#dfe5f1; border-radius:4px; } .bar i { display:block; height:100%; background:var(--blue); border-radius:4px; }
   .spgrid { display:grid; gap:16px; } .spgrid > * { min-width:0; } .spgrid .box { margin-top:16px; }
   .side { align-self:start; } .side details { background:#f4f6fb; }
   .lrow { display:flex; align-items:center; gap:10px; padding:9px 8px; border-radius:10px; font-size:.92rem; } .lrow span:nth-child(2) { flex:1; } .lrow i { color:var(--dim); font-style:normal; font-size:.8rem; }
@@ -97,14 +97,30 @@
   footer { border-top:1px solid var(--line); padding:28px 0; color:var(--dim); font-size:.9rem; }
   footer .wrap { display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between; } footer a { text-decoration:underline; margin-right:14px; }
   .center { text-align:center; padding:80px 20px; }
+  .lft { display:flex; align-items:center; gap:12px; }
+  #burger { width:42px; height:42px; padding:0; border-radius:12px; background:transparent; border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; cursor:pointer; flex:none; }
+  #burger[hidden] { display:none; }
+  #burger i { display:block; width:20px; height:2.5px; border-radius:2px; background:var(--ink); }
+  #veil { position:fixed; inset:0; background:rgba(5,6,8,.55); z-index:30; opacity:0; pointer-events:none; transition:opacity .2s; }
+  #side { position:fixed; top:0; left:0; bottom:0; width:280px; max-width:84vw; background:var(--card); color:var(--ink); z-index:31; transform:translateX(-100%); transition:transform .22s ease; display:flex; flex-direction:column; padding:22px 16px; border-right:1px solid var(--line); box-shadow:2px 0 24px rgba(0,0,0,.2); }
+  body.menu #side { transform:none; } body.menu #veil { opacity:1; pointer-events:auto; }
+  #side .brand { margin:0 8px 20px; display:block; }
+  #snav { display:flex; flex-direction:column; gap:4px; flex:1; }
+  #snav a { display:block; padding:13px 14px; border-radius:12px; font-weight:700; color:var(--dim); }
+  #snav a.on { background:var(--blue); color:#fff; }
+  #side .btn { width:100%; }
 </style>
 </head>
 <body>
 <div id="demo" class="demo" hidden>Mode démo : formations d’exemple. Ajoute tes clés Supabase dans le script pour afficher les tiennes.</div>
 <header class="top"><div class="wrap">
-  <a class="brand" href="#/">Eric <span>Kpakpo</span></a>
+  <div class="lft"><button id="burger" aria-label="Menu" hidden><i></i><i></i><i></i></button><a class="brand" href="#/">Eric <span>Kpakpo</span></a></div>
   <nav class="nav"><a id="nav-user" class="pill" href="#/connexion">Connexion</a></nav>
 </div></header>
+<div id="veil"></div>
+<aside id="side"><span class="brand">Eric <span>Kpakpo</span></span>
+  <nav id="snav"><a href="#/mes-formations" data-r="mes-formations">Mes cours</a><a href="#/compte" data-r="compte">Mes informations</a><a href="#/" data-r="">Acheter d’autres formations</a></nav>
+  <button id="logout" class="btn o sm">Se déconnecter</button></aside>
 
 <header class="hero"><div class="wrap">
   <p class="tag">Formations en ligne</p>
@@ -236,7 +252,12 @@ const $ = s => document.querySelector(s);
 const COUNTRIES = ['Bénin', 'Togo', 'Côte d’Ivoire', 'Sénégal', 'Burkina Faso', 'Mali', 'Niger', 'Cameroun', 'Autre'];
 const LOADING = '<div class="center dim">Chargement…</div>';
 const msg = (t, ok) => { const b = $('#msg'); if (b) { b.textContent = t; b.className = 'msg ' + (ok ? 'good' : 'bad'); b.hidden = !t; } };
-function updateNav() { const a = $('#nav-user'); a.textContent = session ? 'Mes formations' : 'Connexion'; a.href = session ? '#/mes-formations' : '#/connexion'; }
+const menu = on => document.body.classList.toggle('menu', on);
+function updateNav() { const a = $('#nav-user'); a.hidden = !!session; $('#burger').hidden = !session; if (!session) menu(false); }
+$('#burger').onclick = () => menu(true);
+$('#veil').onclick = () => menu(false);
+$('#snav').onclick = e => { if (e.target.closest('a')) menu(false); };
+$('#logout').onclick = async () => { menu(false); if (sb) await sb.auth.signOut(); location.hash = '#/'; };
 async function fn(name, body) {
   const { data, error } = await sb.functions.invoke(name, { body });
   if (error) { let m = 'Une erreur est survenue. Réessaie.'; try { m = (await error.context.json()).error || m; } catch (_) {} throw new Error(m); }
@@ -322,14 +343,53 @@ async function mine() {
   const r = await sb.from('enrollments').select('created_at, courses(title, slug, cover_url, categories(name))').order('created_at', { ascending: false });
   if (r.error) throw r.error;
   const list = (r.data || []).filter(e => e.courses);
-  app.innerHTML = `<div class="wrap pad"><div class="row"><h1 class="h1s">Mes formations</h1><button id="out" class="btn o sm">Déconnexion</button></div>
+  app.innerHTML = `<div class="wrap pad"><h1 class="h1s" style="margin-bottom:22px">Mes cours</h1>
     <div class="grid">${list.map(e => `<a class="card" href="#/cours/${encodeURIComponent(e.courses.slug)}">${cov(e.courses)}<div class="cbody"><span class="cat">${esc(e.courses.categories ? e.courses.categories.name : 'Formation')}</span><h3>${esc(e.courses.title)}</h3><div class="meta">Ouvrir la formation →</div></div></a>`).join('') || '<p class="dim">Tu n’as pas encore de formation. <a class="lk" href="#/">Voir le catalogue</a></p>'}</div></div>`;
-  $('#out').onclick = async () => { await sb.auth.signOut(); location.hash = '#/'; };
+}
+
+/* ---- Mes informations ---- */
+async function account() {
+  if (demo || !session) { location.hash = '#/connexion'; return; }
+  app.innerHTML = LOADING;
+  const r = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  if (r.error) throw r.error;
+  const p = r.data || {};
+  document.title = 'Mes informations · Eric Kpakpo';
+  const cs = (!p.country || COUNTRIES.includes(p.country)) ? COUNTRIES : [p.country, ...COUNTRIES];
+  const note = (id, t, good) => { const b = $(id); b.textContent = t; b.className = 'msg ' + (good ? 'good' : 'bad'); b.hidden = !t; };
+  app.innerHTML = `<div class="wrap narrow pad"><h1 class="h1s">Mes informations</h1>
+    <form id="pf" class="box"><h2 style="margin-bottom:4px">Mon profil</h2>
+      <label>Prénom<input id="a-fn" required autocomplete="given-name" value="${esc(p.first_name)}"></label>
+      <label>Nom<input id="a-ln" required autocomplete="family-name" value="${esc(p.last_name)}"></label>
+      <label>E-mail<input value="${esc(session.user.email)}" disabled></label>
+      <label>Pays de résidence<select id="a-co">${cs.map(x => `<option${x === p.country ? ' selected' : ''}>${esc(x)}</option>`).join('')}</select></label>
+      <label>WhatsApp<input id="a-wa" type="tel" required autocomplete="tel" value="${esc(p.whatsapp)}"></label>
+      <div id="pm" class="msg" hidden></div><button class="btn b" style="width:100%;margin-top:6px" type="submit">Enregistrer</button></form>
+    <form id="wf" class="box mt"><h2 style="margin-bottom:4px">Changer mon mot de passe</h2>
+      <label>Nouveau mot de passe<input id="a-p1" type="password" minlength="8" required autocomplete="new-password"></label>
+      <label>Confirmer le mot de passe<input id="a-p2" type="password" minlength="8" required autocomplete="new-password"></label>
+      <div id="wm" class="msg" hidden></div><button class="btn b" style="width:100%;margin-top:6px" type="submit">Changer le mot de passe</button></form></div>`;
+  $('#pf').onsubmit = async ev => {
+    ev.preventDefault();
+    const u = await sb.from('profiles').update({ first_name: $('#a-fn').value.trim(), last_name: $('#a-ln').value.trim(), whatsapp: $('#a-wa').value.trim(), country: $('#a-co').value }).eq('id', session.user.id).select('id');
+    if (u.error || !(u.data || []).length) return note('#pm', 'Enregistrement impossible. Réessaie.');
+    note('#pm', 'Informations enregistrées ✓', true);
+  };
+  $('#wf').onsubmit = async ev => {
+    ev.preventDefault();
+    const a = $('#a-p1').value, b = $('#a-p2').value;
+    if (a.length < 8) return note('#wm', 'Le mot de passe doit contenir au moins 8 caractères.');
+    if (a !== b) return note('#wm', 'Les deux mots de passe ne sont pas identiques.');
+    const u = await sb.auth.updateUser({ password: a });
+    if (u.error) return note('#wm', 'Changement impossible : ' + u.error.message);
+    $('#wf').reset(); note('#wm', 'Mot de passe modifié ✓', true);
+  };
 }
 
 /* ---- espace élève : suivre la formation ---- */
 function player(url) {
   if (!url) return '<div class="vid empty">Pas de vidéo pour cette leçon.</div>';
+  if (url.startsWith('storage:')) return '<div class="vid" id="vslot">Chargement de la vidéo…</div>';
   const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
   if (yt) return `<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
   const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
@@ -381,9 +441,10 @@ async function space(slug, lid) {
     const mine = files.filter(f => f.lesson_id === cur.id), general = files.filter(f => !f.lesson_id);
     app.innerHTML = `<div class="wrap pad" style="padding-top:20px">
       <div class="crumb" style="margin-top:0"><a href="#/mes-formations">Mes formations</a> › ${esc(c.title)}</div>
-      <div class="prog"><div class="row" style="margin:0 0 8px"><b>${done.size} / ${ls.length} leçons terminées</b><b>${pct}%</b></div><div class="bar"><i style="width:${pct}%"></i></div>${pct === 100 ? '<div class="msg good">🎉 Félicitations, tu as terminé la formation !</div>' : ''}</div>
       <div class="spgrid"><div>
-        ${player(cur.video_url)}<h1 class="h1s" style="margin-top:18px">${esc(cur.title)}</h1>
+        ${player(cur.video_url)}
+        <div class="prog"><div class="row" style="margin:0 0 8px"><b>${done.size} / ${ls.length} leçons terminées</b><b>${pct}%</b></div><div class="bar"><i style="width:${pct}%"></i></div>${pct === 100 ? '<div class="msg good">🎉 Félicitations, tu as terminé la formation !</div>' : ''}</div>
+        <h1 class="h1s" style="margin-top:14px">${esc(cur.title)}</h1>
         ${cur.content ? `<div class="box"><p style="margin:0;white-space:pre-line">${esc(cur.content)}</p></div>` : ''}
         ${mine.length ? `<div class="box"><h2>Fichiers de cette leçon</h2><div class="dls">${dlBtns(mine)}</div></div>` : ''}
         ${general.length ? `<div class="box"><h2>Ressources de la formation</h2><div class="dls">${dlBtns(general)}</div></div>` : ''}
@@ -393,6 +454,8 @@ async function space(slug, lid) {
         return `<details${it.includes(cur) ? ' open' : ''}><summary><span>${esc(m.title)}</span><small>${it.length}</small></summary>${it.map(l => `<a class="lrow${l === cur ? ' on' : ''}" href="#" data-id="${l.id}"><span class="dot${done.has(l.id) ? ' ok' : ''}">${done.has(l.id) ? '✓' : ''}</span><span>${esc(l.title)}</span><i>${dur(l.duration_min)}</i></a>`).join('')}</details>`; }).join('')}</aside>
       </div></div>`;
     app.querySelectorAll('.lrow').forEach(a => a.onclick = ev => { ev.preventDefault(); cur = ls.find(l => l.id === a.dataset.id); history.replaceState(null, '', url()); draw(); scrollTo(0, 0); });
+    const vs = $('#vslot');
+    if (vs) { const lid2 = cur.id; sb.storage.from('course-files').createSignedUrl(cur.video_url.slice(8), 21600).then(r => { if (!$('#vslot') || cur.id !== lid2) return; if (r.error) { vs.textContent = 'Vidéo indisponible. Réessaie.'; return; } vs.innerHTML = `<video controls controlslist="nodownload" playsinline preload="metadata" src="${esc(r.data.signedUrl)}"></video>`; }); }
     $('#done').onclick = async () => { if (!(await mark(true))) return; if (next) cur = next; history.replaceState(null, '', url()); draw(); scrollTo(0, 0); };
     const u = $('#undo'); if (u) u.onclick = async () => { if (await mark(false)) draw(); };
     app.querySelectorAll('.dl').forEach(b => b.onclick = async () => {
@@ -406,16 +469,18 @@ async function space(slug, lid) {
 
 async function route() {
   const m = (location.hash.slice(1) || '/').split('/'), R = m[1], arg = decodeURIComponent(m[2] || '');
-  const light = ['formation', 'paiement', 'connexion', 'succes', 'mes-formations', 'cours'].includes(R);
+  const light = ['formation', 'paiement', 'connexion', 'succes', 'mes-formations', 'cours', 'compte'].includes(R);
   document.body.classList.toggle('light', light);
   if (!light) document.title = 'Formations · Eric Kpakpo';
-  scrollTo(0, 0);
+  document.querySelectorAll('#snav a').forEach(a => a.classList.toggle('on', a.dataset.r === (R === 'cours' ? 'mes-formations' : R || '')));
+  menu(false); scrollTo(0, 0);
   try {
     if (R === 'formation') await detail(arg);
     else if (R === 'paiement') await checkout(arg);
     else if (R === 'succes') await success(arg);
     else if (R === 'connexion') login();
     else if (R === 'mes-formations') await mine();
+    else if (R === 'compte') await account();
     else if (R === 'cours') await space(arg, decodeURIComponent(m[3] || ''));
     else await home();
   } catch (e) { console.error(e); app.innerHTML = '<div class="center"><p>Une erreur est survenue. Réessaie dans un instant.</p></div>'; }
