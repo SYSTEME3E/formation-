@@ -151,7 +151,7 @@
   <button id="logout" class="btn o sm">Se déconnecter</button></aside>
 
 <header class="hero"><div class="wrap">
-  <p class="tag">Formations en ligne</p>
+  <p class="tag">Rentabilise toi en commerce</p>
   <h1>Apprends à <span>générer des revenus passif en ligne.</span></h1>
   <p class="lead">E-commerce, Facebook Ads, marketing digital et création de sites web. Des formations concrètes, accessibles dès le paiement.</p>
   <a class="btn y" href="#formations">Voir les formations</a>
@@ -475,6 +475,8 @@ function player(url) {
   if (yt) return `<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
   const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if (vm) return `<div class="vid"><iframe src="https://player.vimeo.com/video/${vm[1]}" allow="fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  const gd = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:export=\w+&)?id=)([\w-]{20,})/);
+  if (gd) return `<div class="vid"><iframe src="https://drive.google.com/file/d/${gd[1]}/preview" allow="autoplay; fullscreen" allowfullscreen loading="lazy"></iframe></div>`;
   return `<div class="vid"><video controls controlslist="nodownload" playsinline src="${esc(url)}"></video></div>`;
 }
 async function space(slug, lid) {
